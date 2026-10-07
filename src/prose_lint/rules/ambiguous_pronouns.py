@@ -83,7 +83,7 @@ def check(doc: Doc, seg: Segment, ratio: float) -> Iterator[Hit]:
             tied = [seg.restore(c.text) for c in ranked if c.score >= ratio * ranked[0].score]
             if len(tied) >= 2:
                 message = f'"{tok.text}" could refer to {" or ".join(map(repr, tied))}; name the noun'
-                yield Hit(sent, message, {"pronoun": tok.text, "candidates": [(seg.restore(c.text), c.score) for c in ranked[:4]]})
+                yield Hit(tok, message, {"pronoun": tok.text, "candidates": [(seg.restore(c.text), c.score) for c in ranked[:4]]})
 
 
 def _resolved(tok: Token) -> bool:

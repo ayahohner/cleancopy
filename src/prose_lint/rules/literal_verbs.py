@@ -35,7 +35,7 @@ def check(doc: Doc, seg: Segment, lexicon: Lexicon, verbs: VerbTable, allow: lis
             continue
         subj = lexicon.classify(head, seg.placeholders)
         if subj.cls in _FAILS[req.needs] and not _allowed(allow, subj, req.phrase):
-            yield Hit(tok.sent, _message(req, subj), {"phrase": req.phrase, "subject": subj.text, "class": subj.cls, "class_source": subj.source})
+            yield Hit(tok, _message(req, subj), {"phrase": req.phrase, "subject": subj.text, "class": subj.cls, "class_source": subj.source})
 
 
 def _requirement(tok: Token, verbs: VerbTable) -> Requirement | None:

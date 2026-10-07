@@ -37,4 +37,7 @@ class Linter:
         ]
 
     def _finding(self, path: str, seg: Segment, rule: str, hit: Hit) -> Finding:
-        return Finding(path, seg.line, rule, self.cfg.severity(rule), hit.message, seg.restore(hit.sentence.text), hit.data)
+        tok = hit.token
+        occurrence = sum(t.lower_ == tok.lower_ for t in tok.sent if t.i <= tok.i)
+        excerpt = seg.restore(tok.sent.text)
+        return Finding(path, seg.line, rule, self.cfg.severity(rule), hit.message, excerpt, tok.text, occurrence, hit.data)
