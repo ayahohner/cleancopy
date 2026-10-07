@@ -1,0 +1,153 @@
+# Verbs and phrases whose literal sense restricts the subject.
+#
+# needs = "animate"  : a person, an organization, or an AI agent or model
+# needs = "concrete" : a physical object, or an agent
+#
+# VerbNet supplies requirements for verbs not listed here. Entries here
+# override VerbNet, and suggestions name literal verbs for inanimate subjects.
+
+[verb.decide]
+suggest = ["determine", "select by rule"]
+[verb.choose]
+suggest = ["select", "determine"]
+[verb.want]
+suggest = ["require", "need"]
+[verb.wish]
+suggest = ["require"]
+[verb.prefer]
+suggest = ["rank first", "select"]
+[verb.tolerate]
+suggest = ["allow", "remain correct under"]
+[verb.know]
+suggest = ["contain", "store", "include"]
+[verb.believe]
+suggest = ["assume"]
+[verb.think]
+suggest = ["compute"]
+[verb.hope]
+[verb.expect]
+suggest = ["assume", "require"]
+[verb.intend]
+[verb.try]
+suggest = ["attempt (for a process)", "run"]
+[verb.care]
+[verb.worry]
+[verb.understand]
+suggest = ["interpret", "parse"]
+[verb.remember]
+suggest = ["store", "retain"]
+[verb.forget]
+suggest = ["discard", "drop"]
+[verb.notice]
+suggest = ["detect"]
+[verb.realize]
+[verb.insist]
+suggest = ["require"]
+[verb.demand]
+suggest = ["require"]
+[verb.ask]
+suggest = ["request", "require", "open a choice"]
+[verb.answer]
+suggest = ["supply a value for", "address", "respond to (for a protocol)"]
+[verb.tell]
+suggest = ["show", "indicate"]
+[verb.say]
+suggest = ["state", "specify"]
+[verb.claim]
+suggest = ["state"]
+[verb.argue]
+suggest = ["imply", "show"]
+[verb.pay]
+suggest = ["use", "require", "cost"]
+[verb.buy]
+suggest = ["make possible", "provide"]
+[verb.sell]
+[verb.spend]
+suggest = ["use", "take"]
+[verb.earn]
+suggest = ["obtain", "receive"]
+[verb.afford]
+suggest = ["allow"]
+[verb.owe]
+[verb.sit]
+needs = "concrete"
+suggest = ["lie", "be placed", "be"]
+[verb.stand]
+needs = "concrete"
+[verb.walk]
+needs = "concrete"
+[verb.fight]
+suggest = ["conflict with"]
+[verb.compete]
+[verb.win]
+suggest = ["take precedence", "be selected"]
+[verb.struggle]
+[verb.suffer]
+suggest = ["is degraded by"]
+[verb.enjoy]
+[verb.embrace]
+suggest = ["include", "adopt"]
+[verb.dictate]
+suggest = ["determine"]
+
+# Figures built from a verb and a particle, preposition, object, or naming
+# complement. The single verb has literal senses with any subject.
+[[phrase]]
+verb = "draw"
+object = "line"
+suggest = ["separate", "state the boundary between"]
+
+[[phrase]]
+verb = "pay"
+prep = "for"
+suggest = ["use", "require"]
+
+[[phrase]]
+verb = "give"
+particle = "up"
+suggest = ["exclude", "omit"]
+
+[[phrase]]
+verb = "take"
+object = "part"
+suggest = ["is involved", "participates (for agents)"]
+
+[[phrase]]
+verb = "call"
+complement = true
+suggest = ["is called (passive)", "names"]
+
+[[phrase]]
+verb = "keep"
+object = "track"
+suggest = ["record", "store"]
+
+
+# Verbs whose VerbNet restriction is met by ordinary technical usage, where
+# flagging every use would only be noise.
+[ignore]
+verbs = ["admit", "accept", "reject", "show", "use", "run", "read", "write", "send", "receive", "store", "hold", "contain", "carry", "move", "follow", "lead", "require", "need", "give", "take", "get", "make", "keep", "put", "place", "set", "find", "start", "stop", "open", "close", "check", "test", "record", "count", "produce", "replace", "deliver", "build", "compute", "evaluate", "apply", "return", "pick", "present", "seal", "bind", "merge", "translate", "list", "mark", "state", "name", "label", "derive", "describe", "define", "express", "include", "cover", "map", "share", "split", "assign", "add", "remove", "change", "convert", "allow", "let", "prevent", "keep", "survive", "fail", "lose", "wait", "respond", "reply", "act", "serve", "supply", "provide", "offer", "support"]
+
+[verb.face]
+suggest = ["have", "is subject to"]
+[verb.treat]
+suggest = ["count as", "handle as"]
+[verb.assume]
+suggest = ["is valid only if", "requires"]
+[verb.respect]
+suggest = ["stay within", "satisfy"]
+[verb.trade]
+suggest = ["exchange", "weigh"]
+[verb.contribute]
+suggest = ["provide", "supply"]
+
+# Lexicalized idioms that do not carry their verb's literal restriction.
+[[phrase]]
+verb = "stand"
+prep = "for"
+needs = "any"
+
+[[phrase]]
+verb = "agree"
+prep = "to"
+suggest = ["accept"]
