@@ -17,6 +17,7 @@ en-core-web-trf = { url = "https://github.com/explosion/spacy-models/releases/do
 [dependency-groups]
 dev = [
     "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
 ]
 
 [project.scripts]
@@ -31,3 +32,4 @@ packages = ["src/prose_lint"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+filterwarnings = ["ignore::FutureWarning:torch"]

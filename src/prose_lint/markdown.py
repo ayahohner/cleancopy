@@ -3,6 +3,9 @@
 Code spans and inline math are replaced by placeholder words so that the
 parser sees a grammatical sentence; each placeholder remembers the text it
 replaced, so findings can quote the original.
+
+``<!-- prose-lint-disable literal-verbs -->`` disables the named rules, or
+all rules when none is named, for the next block: a paragraph, list, or table.
 """
 
 from __future__ import annotations
@@ -11,82 +14,97 @@ import re
 from dataclasses import dataclass, field
 
 from markdown_it import MarkdownIt
+from markdown_it.token import Token
 from mdit_py_plugins.dollarmath import dollarmath_plugin
 from mdit_py_plugins.front_matter import front_matter_plugin
 
 # A placeholder must be one token that the parser tags as a proper noun.
 PLACEHOLDER = re.compile(r"\bZq[a-z]+\b")
+DISABLE = re.compile(r"<!--\s*prose-lint-disable\b([^>]*?)-->")
+_FIELD = re.compile(r"(?:title|description):\s*(.*)")
+_INLINE_CODE = {"code_inline": "`{}`", "math_inline": "${}$"}
+
+_parser = MarkdownIt("commonmark").enable("table").use(front_matter_plugin).use(dollarmath_plugin)
 
 
 @dataclass
 class Segment:
     text: str
     line: int
-    # placeholder word -> (kind, original text); kind is "code" or "math"
-    placeholders: dict[str, tuple[str, str]] = field(default_factory=dict)
-    # rules disabled for this segment by a preceding "<!-- prose-lint-disable rule ... -->"
+    placeholders: dict[str, str] = field(default_factory=dict)  # placeholder -> original text
     disabled: set[str] = field(default_factory=set)
 
     def restore(self, text: str) -> str:
-        return PLACEHOLDER.sub(lambda m: self.placeholders.get(m.group(0), ("", m.group(0)))[1], text)
+        return PLACEHOLDER.sub(lambda m: self.placeholders.get(m.group(0), m.group(0)), text)
+
+    def enables(self, rule: str) -> bool:
+        return not self.disabled & {"*", rule}
+
+
+class _Disabled:
+    """Rules named by a disable comment, applied to the next top-level block."""
+
+    def __init__(self) -> None:
+        self.pending: set[str] = set()
+        self.active: set[str] = set()
+        self.depth = 0
+
+    def note(self, html: str) -> None:
+        m = DISABLE.search(html)
+        if m:
+            self.pending = set(m.group(1).split()) or {"*"}
+
+    def enter(self, token: Token) -> None:
+        if token.nesting == 1 and self.depth == 0:
+            self.active, self.pending = self.pending, set()
+        self.depth += token.nesting
+
+
+def segments(source: str) -> list[Segment]:
+    out: list[Segment] = []
+    disabled = _Disabled()
+    for token in _parser.parse(source):
+        if token.type == "front_matter":
+            out += _front_matter(token.content)
+        elif token.type == "html_block":
+            disabled.note(token.content)
+        else:
+            disabled.enter(token)
+            out += _inline(token, disabled.active)
+    return out
+
+
+def _front_matter(content: str) -> list[Segment]:
+    # Line 1 is the opening "---".
+    matches = ((i + 2, _FIELD.match(raw)) for i, raw in enumerate(content.splitlines()))
+    return [Segment(m.group(1).strip().strip("\"'"), line) for line, m in matches if m]
+
+
+def _inline(token: Token, disabled: set[str]) -> list[Segment]:
+    if token.type != "inline" or not token.map:
+        return []
+    seg = Segment("", token.map[0] + 1, disabled=set(disabled))
+    seg.text = "".join(_text(child, seg) for child in token.children or []).strip()
+    return [seg] if seg.text else []
+
+
+def _text(child: Token, seg: Segment) -> str:
+    if child.type == "text":
+        return child.content
+    if child.type in ("softbreak", "hardbreak"):
+        return " "
+    if child.type in _INLINE_CODE:
+        word = _placeholder(len(seg.placeholders))
+        seg.placeholders[word] = _INLINE_CODE[child.type].format(child.content)
+        return word
+    return ""  # images and link markup
 
 
 def _placeholder(n: int) -> str:
+    """Zqa, Zqb, ..., Zqz, Zqaa, ..."""
     letters = ""
     n += 1
     while n:
         n, r = divmod(n - 1, 26)
         letters = chr(97 + r) + letters
     return "Zq" + letters
-
-
-# "<!-- prose-lint-disable literal-verbs -->" disables the named rules (or all
-# rules, with no names) for the next block: a paragraph, list item, or table.
-DISABLE = re.compile(r"<!--\s*prose-lint-disable\b([^>]*?)-->")
-
-_parser = MarkdownIt("commonmark").enable("table").use(front_matter_plugin).use(dollarmath_plugin)
-
-
-def segments(source: str) -> list[Segment]:
-    out: list[Segment] = []
-    pending: set[str] | None = None  # rules to disable in the next block
-    active: set[str] = set()
-    depth = 0
-    for token in _parser.parse(source):
-        if token.type in ("html_block", "html_inline"):
-            m = DISABLE.search(token.content)
-            if m:
-                pending = set(m.group(1).split()) or {"*"}
-            continue
-        if token.nesting == 1:
-            if depth == 0:
-                active, pending = (pending or set()), None
-            depth += 1
-        elif token.nesting == -1:
-            depth -= 1
-        if token.type == "front_matter":
-            for offset, raw in enumerate(token.content.splitlines()):
-                m = re.match(r"(title|description):\s*(.*)", raw)
-                if m:
-                    value = m.group(2).strip().strip('"').strip("'")
-                    out.append(Segment(value, offset + 2))
-        elif token.type == "inline" and token.map:
-            seg = Segment("", token.map[0] + 1, disabled=set(active))
-            parts: list[str] = []
-            for child in token.children or []:
-                if child.type == "image":
-                    continue
-                if child.type == "text":
-                    parts.append(child.content)
-                elif child.type in ("code_inline", "math_inline"):
-                    word = _placeholder(len(seg.placeholders))
-                    kind = "code" if child.type == "code_inline" else "math"
-                    original = f"`{child.content}`" if kind == "code" else f"${child.content}$"
-                    seg.placeholders[word] = (kind, original)
-                    parts.append(word)
-                elif child.type in ("softbreak", "hardbreak"):
-                    parts.append(" ")
-            seg.text = "".join(parts).strip()
-            if seg.text:
-                out.append(seg)
-    return out

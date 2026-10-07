@@ -42,3 +42,13 @@ def test_disable_comment(lint):
     text = "<!-- prose-lint-disable literal-verbs -->\nThe theorem draws the line.\n\nThe theorem draws the line.\n"
     found = lint(text, RULE, lexicon=LEXICON)
     assert [f.line for f in found] == [4]
+
+
+@pytest.mark.parametrize("text", [
+    "A function deciding the order is a sequencer.",
+    "The runtime records the value, deciding the order.",
+    "If the hold is refused, the record rests on a record that rollback recovery calls an orphan.",
+])
+def test_finds_subjects_through_participles_and_complements(lint, text):
+    lexicon = LEXICON | {"abstract": [*LEXICON["abstract"], "runtime", "rollback recovery"]}
+    assert len(lint(text, RULE, lexicon=lexicon)) == 1

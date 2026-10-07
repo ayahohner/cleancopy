@@ -3,67 +3,56 @@ literal sense takes.
 
 Flags "the theorem draws the line", "a function tolerates delays", and "a
 choice pays for two-phase commit", and allows "an AI agent tolerates delays".
-Senses that a field has made into technical terms, such as "a compiler
-rejects", are silenced with allow entries of the form "subject verb", where
-the subject may be a lexicon key, "@class", or "*".
+Senses that a field has made into technical terms are silenced with allow
+entries of the form "subject verb", where the subject may be a lexicon key,
+"@class", or "*".
 """
 
 from __future__ import annotations
 
-from spacy.tokens import Doc
+from collections.abc import Iterator
 
-from ..findings import Finding
+from spacy.tokens import Doc, Token
+
+from ..findings import Hit
 from ..grammar import subject_of
-from ..lexicon import ABSTRACT, PHYSICAL, Lexicon
+from ..lexicon import ABSTRACT, PHYSICAL, Lexicon, Subject
 from ..markdown import Segment
-from ..verbs import ANIMATE, CONCRETE, VerbTable
+from ..verbs import ANIMATE, CONCRETE, Requirement, VerbTable
 
 NAME = "literal-verbs"
 
-_LABEL = {ANIMATE: "a person, an organization, or an AI agent", CONCRETE: "a physical object or an agent"}
+_TAKES = {ANIMATE: "a person, an organization, or an AI agent", CONCRETE: "a physical object or an agent"}
+_IS = {ABSTRACT: "an abstraction", PHYSICAL: "a physical object"}
 _FAILS = {ANIMATE: {ABSTRACT, PHYSICAL}, CONCRETE: {ABSTRACT}}
 
 
-def _allowed(allow: list[tuple[str, str]], subject_key: str, subject_cls: str, phrase: str) -> bool:
-    for subj, verb in allow:
-        if verb not in (phrase, phrase.split()[0], "*"):
+def check(doc: Doc, seg: Segment, lexicon: Lexicon, verbs: VerbTable, allow: list[tuple[str, str]]) -> Iterator[Hit]:
+    for tok in doc:
+        req = _requirement(tok, verbs)
+        head = subject_of(tok) if req else None
+        if head is None:
             continue
-        if subj in ("*", subject_key, f"@{subject_cls}") or subject_key.endswith(" " + subj):
-            return True
-    return False
+        subj = lexicon.classify(head, seg.placeholders)
+        if subj.cls in _FAILS[req.needs] and not _allowed(allow, subj, req.phrase):
+            yield Hit(tok.sent, _message(req, subj), {"phrase": req.phrase, "subject": subj.text, "class": subj.cls, "class_source": subj.source})
 
 
-def check(doc: Doc, seg: Segment, path: str, lexicon: Lexicon, verbs: VerbTable, allow: list[tuple[str, str]], severity: str) -> list[Finding]:
-    out = []
-    for sent in doc.sents:
-        for tok in sent:
-            if tok.pos_ != "VERB":
-                continue
-            # A bare past participle is adjectival: "made known".
-            if tok.tag_ == "VBN" and not any(k.dep_ in ("aux", "auxpass", "agent") for k in tok.children):
-                continue
-            req = verbs.match(tok)
-            if not req:
-                continue
-            head = subject_of(tok)
-            if head is None:
-                continue
-            subj = lexicon.classify(head, seg.placeholders)
-            if subj.cls not in _FAILS[req.needs]:
-                continue
-            if _allowed(allow, subj.key, subj.cls, req.phrase):
-                continue
-            message = f'"{req.phrase}" takes {_LABEL[req.needs]} as its subject, but "{subj.text}" is {"an abstraction" if subj.cls == ABSTRACT else "a physical object"}'
-            if req.suggest:
-                message += f"; literal options: {', '.join(req.suggest)}"
-            out.append(Finding(
-                path=path,
-                line=seg.line,
-                rule=NAME,
-                severity="info" if req.source.startswith("VerbNet") else severity,
-                message=message,
-                excerpt=seg.restore(sent.text),
-                data={"verb": tok.text, "phrase": req.phrase, "subject": subj.text, "subject_class": subj.cls,
-                      "class_source": subj.source, "requirement": req.needs, "requirement_source": req.source},
-            ))
-    return out
+def _requirement(tok: Token, verbs: VerbTable) -> Requirement | None:
+    if tok.pos_ != "VERB":
+        return None
+    # A bare past participle is adjectival: "made known".
+    if tok.tag_ == "VBN" and not any(k.dep_ in ("aux", "auxpass", "agent") for k in tok.children):
+        return None
+    return verbs.match(tok)
+
+
+def _allowed(allow: list[tuple[str, str]], subj: Subject, phrase: str) -> bool:
+    verbs = {phrase, phrase.split()[0], "*"}
+    subjects = {"*", subj.key, f"@{subj.cls}", subj.key.rsplit(" ", 1)[-1]}
+    return any(v in verbs and s in subjects for s, v in allow)
+
+
+def _message(req: Requirement, subj: Subject) -> str:
+    message = f'"{req.phrase}" takes {_TAKES[req.needs]} as its subject, but "{subj.text}" is {_IS[subj.cls]}'
+    return message + (f"; literal options: {', '.join(req.suggest)}" if req.suggest else "")

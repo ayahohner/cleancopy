@@ -3,8 +3,7 @@
 # needs = "animate"  : a person, an organization, or an AI agent or model
 # needs = "concrete" : a physical object, or an agent
 #
-# VerbNet supplies requirements for verbs not listed here. Entries here
-# override VerbNet, and suggestions name literal verbs for inanimate subjects.
+# Suggestions name literal verbs for inanimate subjects.
 
 [verb.decide]
 suggest = ["determine", "select by rule"]
@@ -123,9 +122,6 @@ object = "track"
 suggest = ["record", "store"]
 
 
-# Verbs whose VerbNet restriction is met by ordinary technical usage, where
-# flagging every use would only be noise.
-[ignore]
 verbs = ["admit", "accept", "reject", "show", "use", "run", "read", "write", "send", "receive", "store", "hold", "contain", "carry", "move", "follow", "lead", "require", "need", "give", "take", "get", "make", "keep", "put", "place", "set", "find", "start", "stop", "open", "close", "check", "test", "record", "count", "produce", "replace", "deliver", "build", "compute", "evaluate", "apply", "return", "pick", "present", "seal", "bind", "merge", "translate", "list", "mark", "state", "name", "label", "derive", "describe", "define", "express", "include", "cover", "map", "share", "split", "assign", "add", "remove", "change", "convert", "allow", "let", "prevent", "keep", "survive", "fail", "lose", "wait", "respond", "reply", "act", "serve", "supply", "provide", "offer", "support"]
 
 [verb.face]

@@ -1,15 +1,16 @@
 import pytest
 
-from prose_lint import config
-from prose_lint.cli import lint_text
-from prose_lint.nlp import ensure_nltk_data
+from prose_lint.config import Config
+from prose_lint.linter import Linter
+from prose_lint.nlp import ensure_wordnet
 
-ensure_nltk_data()
+ensure_wordnet()
 
 
 @pytest.fixture
 def lint():
     def run(text: str, name: str, **cfg):
-        c = config.Config(root=None, lexicon=cfg.get("lexicon", {}), rules={name: cfg.get("rule", {})})
-        return [f for f in lint_text(text, "test.md", c, cache_dir=None, only={name})]
+        c = Config(lexicon=cfg.get("lexicon", {}), rules={name: cfg.get("rule", {})})
+        return Linter(c, only={name}).lint(text, "test.md")
+
     return run

@@ -22,3 +22,12 @@ def test_flags_tied_candidates(lint, text):
 ])
 def test_allows_clear_pronouns(lint, text):
     assert lint(text, RULE) == []
+
+
+def test_expletive_with_clause(lint):
+    assert lint("The record and the view exist. It seems that the scope is sealed.", RULE) == []
+
+
+def test_existential_candidate_scores(lint):
+    found = lint("There is a record in the scope, and a view reads it.", RULE)
+    assert all(f.data["pronoun"] == "it" for f in found)

@@ -7,40 +7,41 @@ from __future__ import annotations
 from spacy.tokens import Token
 
 RELATIVE = {"that", "which", "who", "whom", "whose"}
+_PASSIVE = {"nsubjpass", "csubjpass", "auxpass", "expl"}
 
 
 def subject_of(verb: Token, depth: int = 0) -> Token | None:
     """The token heading the phrase that performs ``verb``, or None.
 
     For a passive verb the performer is the object of "by"; a passive verb
-    without "by" has no performer in the sentence, so None is returned.
+    without "by" has no performer in the sentence.
     """
-    if depth > 6:
+    deps = {k.dep_: k for k in reversed(list(verb.children))}  # first child per relation
+    if "agent" in deps:
+        return _object(deps["agent"])
+    if deps.keys() & _PASSIVE or depth > 6:
         return None
-    kids = list(verb.children)
-    for k in kids:
-        if k.dep_ == "agent":  # passive "by X"
-            objs = [g for g in k.children if g.dep_ == "pobj"]
-            return objs[0] if objs else None
-    if any(k.dep_ in ("nsubjpass", "csubjpass", "auxpass") for k in kids):
-        return None
-    for k in kids:
-        if k.dep_ in ("nsubj", "csubj", "expl"):
-            if k.dep_ == "expl":
-                return None
-            if k.lower_ in RELATIVE and verb.dep_ == "relcl":
-                return verb.head
-            return k
-    if verb.dep_ == "relcl":
+    subj = deps.get("nsubj", deps.get("csubj"))
+    if subj is None:
+        return _inherited(verb, depth)
+    return verb.head if _relative(subj, verb) else subj
+
+
+def _object(preposition: Token) -> Token | None:
+    return next((g for g in preposition.children if g.dep_ == "pobj"), None)
+
+
+def _relative(subj: Token, verb: Token) -> bool:
+    """ "that" in "a function that decides" stands for "function". """
+    return subj.lower_ in RELATIVE and verb.dep_ == "relcl"
+
+
+def _inherited(verb: Token, depth: int) -> Token | None:
+    """The subject of a verb that has none of its own: "a function deciding",
+    "decides and records", "tries to decide", "..., making X"."""
+    gerund = verb.tag_ == "VBG"
+    if verb.dep_ == "relcl" or (verb.dep_ == "acl" and gerund):
         return verb.head
-    if verb.dep_ == "acl" and verb.tag_ == "VBG":  # "a function deciding ..."
-        return verb.head
-    if verb.dep_ in ("conj", "xcomp") and verb.head.i != verb.i:
-        return subject_of(verb.head, depth + 1)
-    if verb.dep_ == "advcl" and verb.tag_ == "VBG":  # "..., making X" shares the main subject
+    if verb.dep_ in ("conj", "xcomp") or (verb.dep_ == "advcl" and gerund):
         return subject_of(verb.head, depth + 1)
     return None
-
-
-def is_negated(verb: Token) -> bool:
-    return any(k.dep_ == "neg" for k in verb.children)
