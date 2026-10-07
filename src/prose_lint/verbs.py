@@ -17,6 +17,7 @@ from spacy.tokens import Token
 
 ANIMATE = "animate"  # a person, an organization, or an AI agent
 CONCRETE = "concrete"  # a physical object or an agent
+SPEAKER = "speaker"  # an agent, or a text that carries words
 ANY = "any"  # an exemption
 
 _SLOTS = {"particle": ("prt",), "prep": ("prep", "prt"), "object": ("dobj", "obj", "attr")}
@@ -28,6 +29,7 @@ class Requirement:
     needs: str  # ANIMATE or CONCRETE
     phrase: str  # the verb or phrase as it matched
     suggest: tuple[str, ...] = ()
+    severity: str | None = None  # overrides the rule's severity
 
 
 @dataclass
@@ -45,7 +47,7 @@ class VerbTable:
         entry, words = self._lookup(verb)
         if entry is None or entry.get("needs") == ANY:
             return None
-        return Requirement(entry.get("needs", ANIMATE), words, tuple(entry.get("suggest", ())))
+        return Requirement(entry.get("needs", ANIMATE), words, tuple(entry.get("suggest", ())), entry.get("severity"))
 
     def _lookup(self, verb: Token) -> tuple[dict | None, str]:
         lemma = verb.lemma_.lower()

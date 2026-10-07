@@ -41,6 +41,7 @@ from ..grammar import subject_of
 from ..markdown import PLACEHOLDER, Segment
 
 NAME = "ambiguous-pronouns"
+CONTEXT = 1  # candidates come from this many preceding sentences
 
 NUMBER = {"it": "sg", "its": "sg", "they": "pl", "them": "pl", "their": "pl"}
 _TAG_NUMBER = {"NN": "sg", "NNP": "sg", "NNS": "pl", "NNPS": "pl"}
@@ -79,7 +80,7 @@ def check(doc: Doc, seg: Segment, ratio: float) -> Iterator[Hit]:
         for tok in sent:
             if _resolved(tok):
                 continue
-            ranked = _Pronoun(tok, parens).rank(sents[max(0, i - 1) : i + 1])
+            ranked = _Pronoun(tok, parens).rank(sents[max(0, i - CONTEXT) : i + 1])
             tied = [seg.restore(c.text) for c in ranked if c.score >= ratio * ranked[0].score]
             if len(tied) >= 2:
                 message = f'"{tok.text}" could refer to {" or ".join(map(repr, tied))}; name the noun'

@@ -2,6 +2,9 @@
 #
 # needs = "animate"  : a person, an organization, or an AI agent or model
 # needs = "concrete" : a physical object, or an agent
+# needs = "speaker"  : an agent, or a text that carries words, such as a message
+#                      or a rule ("the message asks", "the rules say")
+# severity = "info"  : a figure that reads as near-literal; worth fixing, not failing
 #
 # Suggestions name literal verbs for inanimate subjects.
 
@@ -41,20 +44,28 @@ suggest = ["discard", "drop"]
 suggest = ["detect"]
 [verb.realize]
 [verb.insist]
+needs = "speaker"
 suggest = ["require"]
 [verb.demand]
+needs = "speaker"
 suggest = ["require"]
 [verb.ask]
+needs = "speaker"
 suggest = ["request", "require", "open a choice"]
 [verb.answer]
+needs = "speaker"
 suggest = ["supply a value for", "address", "respond to (for a protocol)"]
 [verb.tell]
+needs = "speaker"
 suggest = ["show", "indicate"]
 [verb.say]
+needs = "speaker"
 suggest = ["state", "specify"]
 [verb.claim]
+needs = "speaker"
 suggest = ["state"]
 [verb.argue]
+needs = "speaker"
 suggest = ["imply", "show"]
 [verb.pay]
 suggest = ["use", "require", "cost"]
@@ -114,7 +125,7 @@ suggest = ["is involved", "participates (for agents)"]
 [[phrase]]
 verb = "call"
 complement = true
-suggest = ["is called (passive)", "names"]
+suggest = ["defines as", "is called (passive)", "names"]
 
 [[phrase]]
 verb = "keep"
@@ -129,18 +140,25 @@ suggest = ["have", "is subject to"]
 [verb.treat]
 suggest = ["count as", "handle as"]
 [verb.assume]
+severity = "info"
 suggest = ["is valid only if", "requires"]
 [verb.respect]
 suggest = ["stay within", "satisfy"]
-[verb.trade]
-suggest = ["exchange", "weigh"]
 [verb.contribute]
 suggest = ["provide", "supply"]
+[verb.trade]
+suggest = ["exchange", "weigh"]
 
 # Lexicalized idioms that do not carry their verb's literal restriction.
 [[phrase]]
 verb = "stand"
 prep = "for"
+needs = "any"
+
+# "Contribute to" is causal: "contention contributes to latency".
+[[phrase]]
+verb = "contribute"
+prep = "to"
 needs = "any"
 
 [[phrase]]

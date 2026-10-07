@@ -31,3 +31,9 @@ def test_expletive_with_clause(lint):
 def test_existential_candidate_scores(lint):
     found = lint("There is a record in the scope, and a view reads it.", RULE)
     assert all(f.data["pronoun"] == "it" for f in found)
+
+
+def test_finding_carries_previous_sentence(lint):
+    text = "The rule constrains the table. A table that violates it is refused before it takes effect."
+    found = lint(text, RULE)
+    assert found and all(f.context == "The rule constrains the table." for f in found)

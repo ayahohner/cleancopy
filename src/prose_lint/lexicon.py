@@ -5,6 +5,8 @@ Classes, from most to least capable:
 - ``agent``: can judge, intend, prefer, or tolerate: people, organizations,
   and AI agents or models.
 - ``physical``: a concrete object, such as a phone or a server.
+- ``text``: something that carries words, such as a message, a request, or a
+  rule, which can ask or say but not decide.
 - ``abstract``: an abstraction, such as a function, a record, a theorem, or a
   code identifier.
 - ``mixed``: a term that covers both agents and non-agents, such as
@@ -15,7 +17,7 @@ Classes, from most to least capable:
 The project lexicon is consulted first, then named-entity labels, then
 WordNet. WordNet is used conservatively for animacy: a word with a person
 sense, such as "server" or "host", is never flagged unless the lexicon says
-otherwise. Between physical and abstract, the first (most frequent) sense
+otherwise. Among physical, text, and abstract, the first (most frequent) sense
 decides, so "goal" is abstract although one sense is a goalpost.
 """
 
@@ -31,6 +33,7 @@ from .markdown import PLACEHOLDER
 
 AGENT = "agent"
 PHYSICAL = "physical"
+TEXT = "text"
 ABSTRACT = "abstract"
 MIXED = "mixed"
 UNKNOWN = "unknown"
@@ -40,6 +43,7 @@ PERSONAL = {"i", "we", "you", "he", "she", "one", "someone", "anyone", "everyone
 
 _ANIMATE_ROOTS = {"person.n.01", "organism.n.01", "social_group.n.01", "people.n.01"}
 _PHYSICAL_ROOT = "physical_entity.n.01"
+_TEXT_ROOT = "communication.n.02"
 _ENTITIES = dict.fromkeys(("PERSON", "ORG", "NORP"), AGENT) | dict.fromkeys(("PRODUCT", "LAW", "WORK_OF_ART", "LANGUAGE"), ABSTRACT)
 
 
@@ -59,7 +63,13 @@ def wordnet_class(lemma: str) -> str:
     animate = [s for s in synsets if _roots(s) & _ANIMATE_ROOTS]
     if animate:
         return AGENT if animate[0] is synsets[0] else MIXED
-    return PHYSICAL if _PHYSICAL_ROOT in _roots(synsets[0]) else ABSTRACT
+    return _inanimate_class(_roots(synsets[0]))
+
+
+def _inanimate_class(roots: set[str]) -> str:
+    if _PHYSICAL_ROOT in roots:
+        return PHYSICAL
+    return TEXT if _TEXT_ROOT in roots else ABSTRACT
 
 
 def _roots(synset) -> set[str]:

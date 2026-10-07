@@ -7,6 +7,7 @@ include = ["src/content/posts/*.md"]
 agent = ["AI agent", "model"]
 physical = ["server", "phone"]
 abstract = ["sequencer", "record"]
+text = ["rule", "message"]        # can ask or say, not decide
 mixed = ["resolver"]            # never flagged
 
 [rules.literal-verbs]

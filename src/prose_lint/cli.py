@@ -47,6 +47,11 @@ def _arguments() -> argparse.ArgumentParser:
     return ap
 
 
+def _text(f: Finding) -> str:
+    context = f"    {f.context}\n" if f.context else ""
+    return f"{f.path}:{f.line}: {f.severity} [{f.rule}] {f.message}\n{context}    {f.excerpt}\n"
+
+
 def _shown(path: Path) -> str:
     resolved = path.resolve()
     return str(resolved.relative_to(Path.cwd())) if resolved.is_relative_to(Path.cwd()) else str(path)
@@ -56,7 +61,7 @@ def _report(findings: list[Finding], fmt: str) -> None:
     if fmt == "json":
         print(json.dumps([f.as_dict() for f in findings], indent=2))
         return
-    print("".join(f"{f.path}:{f.line}: {f.severity} [{f.rule}] {f.message}\n    {f.excerpt}\n" for f in findings), end="")
+    print("".join(_text(f) for f in findings), end="")
     counts = ", ".join(f"{sum(f.rule == r for f in findings)} {r}" for r in RULES)
     print(f"{len(findings)} findings ({counts})", file=sys.stderr)
 

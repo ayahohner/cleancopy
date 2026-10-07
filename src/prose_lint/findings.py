@@ -14,6 +14,7 @@ class Hit:
     token: Token
     message: str
     data: dict
+    severity: str | None = None  # overrides the rule's severity
 
 
 @dataclass
@@ -24,6 +25,7 @@ class Finding:
     severity: str
     message: str
     excerpt: str
+    context: str  # the preceding sentences the rule read, if any
     word: str
     occurrence: int  # 1 for the first instance of ``word`` in ``excerpt``
     data: dict

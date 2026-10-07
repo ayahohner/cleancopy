@@ -52,3 +52,22 @@ def test_disable_comment(lint):
 def test_finds_subjects_through_participles_and_complements(lint, text):
     lexicon = LEXICON | {"abstract": [*LEXICON["abstract"], "runtime", "rollback recovery"]}
     assert len(lint(text, RULE, lexicon=lexicon)) == 1
+
+
+def test_texts_can_speak_but_not_decide(lint):
+    lexicon = LEXICON | {"text": ["rule"]}
+    assert lint('A chat message asks for "the later slot".', RULE, lexicon=lexicon) == []
+    assert lint("Whatever the access rules say, the refusal reveals the record.", RULE, lexicon=lexicon) == []
+    assert len(lint("The function says that the slot is free.", RULE, lexicon=lexicon)) == 1
+    assert len(lint("The rule decides the order.", RULE, lexicon=lexicon)) == 1
+
+
+def test_near_literal_verbs_are_info(lint):
+    [finding] = lint("The function assumes that the cutoff was fixed.", RULE, lexicon=LEXICON)
+    assert finding.severity == "info"
+
+
+def test_contribute_needs_an_agent_unless_causal(lint):
+    assert len(lint("Each theorem contributed a result.", RULE, lexicon=LEXICON | {"abstract": ["theorem"]})) == 1
+    assert lint("Lock contention contributes to latency.", RULE, lexicon=LEXICON) == []
+    assert lint("Each field contributed a result.", RULE, lexicon=LEXICON, rule={"allow": ["field contribute"]}) == []

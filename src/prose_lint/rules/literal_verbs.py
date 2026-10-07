@@ -16,15 +16,21 @@ from spacy.tokens import Doc, Token
 
 from ..findings import Hit
 from ..grammar import subject_of
-from ..lexicon import ABSTRACT, PHYSICAL, Lexicon, Subject
+from ..lexicon import ABSTRACT, PHYSICAL, TEXT, Lexicon, Subject
 from ..markdown import Segment
-from ..verbs import ANIMATE, CONCRETE, Requirement, VerbTable
+from ..verbs import ANIMATE, CONCRETE, SPEAKER, Requirement, VerbTable
 
 NAME = "literal-verbs"
 
-_TAKES = {ANIMATE: "a person, an organization, or an AI agent", CONCRETE: "a physical object or an agent"}
-_IS = {ABSTRACT: "an abstraction", PHYSICAL: "a physical object"}
-_FAILS = {ANIMATE: {ABSTRACT, PHYSICAL}, CONCRETE: {ABSTRACT}}
+CONTEXT = 0  # preceding sentences a reader needs to judge a finding
+
+_TAKES = {
+    ANIMATE: "a person, an organization, or an AI agent",
+    CONCRETE: "a physical object or an agent",
+    SPEAKER: "an agent or a text, such as a message",
+}
+_IS = {ABSTRACT: "an abstraction", PHYSICAL: "a physical object", TEXT: "a text"}
+_FAILS = {ANIMATE: {ABSTRACT, PHYSICAL, TEXT}, CONCRETE: {ABSTRACT, TEXT}, SPEAKER: {ABSTRACT, PHYSICAL}}
 
 
 def check(doc: Doc, seg: Segment, lexicon: Lexicon, verbs: VerbTable, allow: list[tuple[str, str]]) -> Iterator[Hit]:
@@ -35,7 +41,8 @@ def check(doc: Doc, seg: Segment, lexicon: Lexicon, verbs: VerbTable, allow: lis
             continue
         subj = lexicon.classify(head, seg.placeholders)
         if subj.cls in _FAILS[req.needs] and not _allowed(allow, subj, req.phrase):
-            yield Hit(tok, _message(req, subj), {"phrase": req.phrase, "subject": subj.text, "class": subj.cls, "class_source": subj.source})
+            data = {"phrase": req.phrase, "subject": subj.text, "class": subj.cls, "class_source": subj.source}
+            yield Hit(tok, _message(req, subj), data, req.severity)
 
 
 def _requirement(tok: Token, verbs: VerbTable) -> Requirement | None:
