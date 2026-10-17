@@ -6,6 +6,7 @@ include = ["src/content/posts/*.md"]
 [lexicon]                       # what kind of thing each noun names
 agent = ["AI agent", "model"]
 physical = ["server", "phone"]
+mechanism = ["compiler", "runtime"] # performs operations, cannot decide
 abstract = ["sequencer", "record"]
 text = ["rule", "message"]        # can ask or say, not decide
 mixed = ["resolver"]            # never flagged

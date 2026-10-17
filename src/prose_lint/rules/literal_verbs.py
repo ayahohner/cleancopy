@@ -16,7 +16,7 @@ from spacy.tokens import Doc, Token
 
 from ..findings import Hit
 from ..grammar import subject_of
-from ..lexicon import ABSTRACT, PHYSICAL, TEXT, Lexicon, Subject
+from ..lexicon import ABSTRACT, MECHANISM, PHYSICAL, TEXT, Lexicon, Subject
 from ..markdown import Segment
 from ..verbs import ANIMATE, CONCRETE, SPEAKER, Requirement, VerbTable
 
@@ -26,11 +26,11 @@ CONTEXT = 0  # preceding sentences a reader needs to judge a finding
 
 _TAKES = {
     ANIMATE: "a person, an organization, or an AI agent",
-    CONCRETE: "a physical object or an agent",
+    CONCRETE: "a physical object, a mechanism, or an agent",
     SPEAKER: "an agent or a text, such as a message",
 }
-_IS = {ABSTRACT: "an abstraction", PHYSICAL: "a physical object", TEXT: "a text"}
-_FAILS = {ANIMATE: {ABSTRACT, PHYSICAL, TEXT}, CONCRETE: {ABSTRACT, TEXT}, SPEAKER: {ABSTRACT, PHYSICAL}}
+_IS = {ABSTRACT: "an abstraction", PHYSICAL: "a physical object", TEXT: "a text", MECHANISM: "a mechanism"}
+_FAILS = {ANIMATE: {ABSTRACT, PHYSICAL, TEXT, MECHANISM}, CONCRETE: {ABSTRACT, TEXT}, SPEAKER: {ABSTRACT, PHYSICAL, MECHANISM}}
 
 
 def check(doc: Doc, seg: Segment, lexicon: Lexicon, verbs: VerbTable, allow: list[tuple[str, str]]) -> Iterator[Hit]:

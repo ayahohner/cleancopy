@@ -1,7 +1,8 @@
 # Verbs and phrases whose literal sense restricts the subject.
 #
 # needs = "animate"  : a person, an organization, or an AI agent or model
-# needs = "concrete" : a physical object, or an agent
+# needs = "concrete" : a physical object, a mechanism (software that performs
+#                      operations), or an agent
 # needs = "speaker"  : an agent, or a text that carries words, such as a message
 #                      or a rule ("the message asks", "the rules say")
 # severity = "info"  : a figure that reads as near-literal; worth fixing, not failing
@@ -125,7 +126,7 @@ suggest = ["is involved", "participates (for agents)"]
 [[phrase]]
 verb = "call"
 complement = true
-suggest = ["defines as", "is called (passive)", "names"]
+suggest = ["defines as", "is called (passive)", "is named (passive)"]
 
 [[phrase]]
 verb = "keep"
@@ -133,7 +134,17 @@ object = "track"
 suggest = ["record", "store"]
 
 
-verbs = ["admit", "accept", "reject", "show", "use", "run", "read", "write", "send", "receive", "store", "hold", "contain", "carry", "move", "follow", "lead", "require", "need", "give", "take", "get", "make", "keep", "put", "place", "set", "find", "start", "stop", "open", "close", "check", "test", "record", "count", "produce", "replace", "deliver", "build", "compute", "evaluate", "apply", "return", "pick", "present", "seal", "bind", "merge", "translate", "list", "mark", "state", "name", "label", "derive", "describe", "define", "express", "include", "cover", "map", "share", "split", "assign", "add", "remove", "change", "convert", "allow", "let", "prevent", "keep", "survive", "fail", "lose", "wait", "respond", "reply", "act", "serve", "supply", "provide", "offer", "support"]
+# Left out on purpose: verbs with a literal sense for any subject in technical
+# prose, such as "the function returns a value":
+#   admit, accept, reject, show, use, run, read, write, send, receive, store,
+#   hold, contain, carry, move, follow, lead, require, need, give, take, get,
+#   make, keep, put, place, find, start, stop, open, close, check, test, record,
+#   count, produce, replace, build, compute, evaluate, apply, return, pick,
+#   present, seal, bind, merge, translate, list, mark, state, label, derive,
+#   describe, define, express, include, cover, map, share, split, add, remove,
+#   change, convert, allow, let, prevent, survive, fail, lose, wait, respond,
+#   reply, act, serve, provide, support, supply, deliver, set, assign, name.
+# "Set", "assign", and "name" count only with the objects of authority below.
 
 [verb.face]
 suggest = ["have", "is subject to"]
@@ -148,6 +159,50 @@ suggest = ["stay within", "satisfy"]
 suggest = ["provide", "supply"]
 [verb.trade]
 suggest = ["exchange", "weigh"]
+
+# Acts of authority. "Set", "assign", and "name" are literal for any subject in
+# their senses "determine" and "denote" ("physics sets the latency", "a label
+# names the seal"), so only their objects of authority are restricted: "a job
+# sets the hours", "a job assigns the problems", "a job names the role".
+[[phrase]]
+verb = "set"
+object = ["hour", "schedule", "agenda", "goal", "standard", "expectation", "priority", "deadline", "wage", "salary", "price", "quota", "task", "role"]
+needs = "concrete"
+suggest = ["determine", "is set by (passive)"]
+
+[[phrase]]
+verb = "assign"
+object = ["problem", "task", "work", "role", "duty", "homework", "responsibility", "blame", "grade"]
+needs = "concrete"
+suggest = ["determine", "is assigned by (passive)"]
+
+[[phrase]]
+verb = "name"
+object = ["role", "title", "successor", "heir", "winner", "leader"]
+needs = "concrete"
+suggest = ["determine", "is named by (passive)"]
+
+[verb.reward]
+needs = "concrete"
+suggest = ["benefit", "is rewarded by (passive)"]
+[verb.punish]
+needs = "concrete"
+suggest = ["harm", "is punished by (passive)"]
+[verb.grant]
+needs = "concrete"
+suggest = ["allow", "is granted by (passive)"]
+[verb.award]
+needs = "concrete"
+[verb.hire]
+[verb.appoint]
+[verb.guide]
+needs = "concrete"
+severity = "info"
+suggest = ["determine", "constrain"]
+[verb.offer]
+needs = "concrete"
+severity = "info"
+suggest = ["include", "contain", "make available"]
 
 # Lexicalized idioms that do not carry their verb's literal restriction.
 [[phrase]]

@@ -71,3 +71,43 @@ def test_contribute_needs_an_agent_unless_causal(lint):
     assert len(lint("Each theorem contributed a result.", RULE, lexicon=LEXICON | {"abstract": ["theorem"]})) == 1
     assert lint("Lock contention contributes to latency.", RULE, lexicon=LEXICON) == []
     assert lint("Each field contributed a result.", RULE, lexicon=LEXICON, rule={"allow": ["field contribute"]}) == []
+
+
+@pytest.mark.parametrize("text", [
+    "A job sets the hours and assigns the problems.",
+    "Markets reward output.",
+    "A job names the role.",
+    "The tradition grants permission to look.",
+])
+def test_abstractions_cannot_exercise_authority(lint, text):
+    # WordNet gives "market" a sense for its customers, so only the lexicon makes it abstract.
+    assert lint(text, RULE, lexicon=LEXICON | {"abstract": ["market"]})
+
+
+@pytest.mark.parametrize("text", [
+    "The scheduler assigns each worker a task.",
+    "The runtime sets the deadline.",
+    "An employer sets the hours.",
+    "A person names the role.",
+    "Physics sets the latency.",
+    "A label names the seal.",
+    "Integral theory names four domains.",
+])
+def test_set_assign_and_name_need_an_agent_only_for_objects_of_authority(lint, text):
+    lexicon = LEXICON | {"mechanism": ["scheduler", "runtime"], "abstract": ["label"]}
+    assert lint(text, RULE, lexicon=lexicon) == []
+
+
+def test_mechanisms_cannot_decide(lint):
+    assert len(lint("The runtime decides the order.", RULE, lexicon=LEXICON | {"mechanism": ["runtime"]})) == 1
+
+
+def test_borderline_exchange_verbs_are_info(lint):
+    [finding] = lint("Every trap offers a new structure.", RULE, lexicon=LEXICON | {"abstract": ["trap"]})
+    assert finding.severity == "info"
+
+
+def test_proper_noun_senses_do_not_make_a_word_animate():
+    from prose_lint.lexicon import ABSTRACT, wordnet_class
+
+    assert wordnet_class("job") == ABSTRACT

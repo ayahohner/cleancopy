@@ -5,6 +5,9 @@ Classes, from most to least capable:
 - ``agent``: can judge, intend, prefer, or tolerate: people, organizations,
   and AI agents or models.
 - ``physical``: a concrete object, such as a phone or a server.
+- ``mechanism``: software that performs operations, such as a compiler or a
+  runtime, which can set, assign, or deliver but not decide. Only the project
+  lexicon assigns this class.
 - ``text``: something that carries words, such as a message, a request, or a
   rule, which can ask or say but not decide.
 - ``abstract``: an abstraction, such as a function, a record, a theorem, or a
@@ -17,7 +20,8 @@ Classes, from most to least capable:
 The project lexicon is consulted first, then named-entity labels, then
 WordNet. WordNet is used conservatively for animacy: a word with a person
 sense, such as "server" or "host", is never flagged unless the lexicon says
-otherwise. Among physical, text, and abstract, the first (most frequent) sense
+otherwise. A proper-noun sense does not count, so "job" is not a person
+because of the biblical Job. Among physical, text, and abstract, the first (most frequent) sense
 decides, so "goal" is abstract although one sense is a goalpost.
 """
 
@@ -33,6 +37,7 @@ from .markdown import PLACEHOLDER
 
 AGENT = "agent"
 PHYSICAL = "physical"
+MECHANISM = "mechanism"
 TEXT = "text"
 ABSTRACT = "abstract"
 MIXED = "mixed"
@@ -60,10 +65,22 @@ def wordnet_class(lemma: str) -> str:
     synsets = wn.synsets(lemma.replace(" ", "_"), pos=wn.NOUN)
     if not synsets:
         return UNKNOWN
+    synsets = _common_senses(synsets, lemma)
     animate = [s for s in synsets if _roots(s) & _ANIMATE_ROOTS]
     if animate:
         return AGENT if animate[0] is synsets[0] else MIXED
     return _inanimate_class(_roots(synsets[0]))
+
+
+def _common_senses(synsets: list, lemma: str) -> list:
+    """The senses that do not name one individual, or all of them if none remain."""
+    return [s for s in synsets if not _proper(s, lemma)] or synsets
+
+
+def _proper(synset, lemma: str) -> bool:
+    """Whether the sense names one individual, such as Job in "job"."""
+    names = [n for n in synset.lemma_names() if n.lower() == lemma.replace(" ", "_")]
+    return bool(names) and all(n[0].isupper() for n in names)
 
 
 def _inanimate_class(roots: set[str]) -> str:
