@@ -10,20 +10,21 @@ from .findings import Finding, Hit
 from .lexicon import Lexicon
 from .markdown import Segment, segments
 from .nlp import parse
-from .rules import ambiguous_pronouns, literal_verbs
+from .rules import ambiguous_pronouns, literal_verbs, serial_comma
 from .verbs import VerbTable
 
-RULES = (literal_verbs.NAME, ambiguous_pronouns.NAME)
+RULES = (literal_verbs.NAME, ambiguous_pronouns.NAME, serial_comma.NAME)
 
 
 class Linter:
     def __init__(self, cfg: Config, cache_dir: Path | None = None, only: list[str] | None = None):
         self.cfg = cfg
         self.cache_dir = cache_dir
-        self.context = {literal_verbs.NAME: literal_verbs.CONTEXT, ambiguous_pronouns.NAME: ambiguous_pronouns.CONTEXT}
+        self.context = {r.NAME: r.CONTEXT for r in (literal_verbs, ambiguous_pronouns, serial_comma)}
         checks = {
             literal_verbs.NAME: lambda: partial(literal_verbs.check, lexicon=Lexicon(cfg.lexicon), verbs=VerbTable.load(cfg.verbs), allow=cfg.allow(literal_verbs.NAME)),
             ambiguous_pronouns.NAME: lambda: partial(ambiguous_pronouns.check, ratio=cfg.rule(ambiguous_pronouns.NAME).get("ratio", 0.95)),
+            serial_comma.NAME: lambda: partial(serial_comma.check, allow=cfg.rule(serial_comma.NAME).get("allow", [])),
         }
         enabled = [r for r in RULES if cfg.severity(r) != "off" and (only is None or r in only)]
         self.checks = {r: checks[r]() for r in enabled}

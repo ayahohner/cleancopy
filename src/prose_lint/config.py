@@ -18,6 +18,9 @@ allow = ["compiler reject"]     # "subject verb"; subject may be "@class" or "*"
 [rules.ambiguous-pronouns]
 ratio = 0.95                    # flag when the runner-up has this share of the leader's salience
 
+[rules.serial-comma]
+allow = ["Games, Life and Utopia"]  # skips any sentence containing the phrase
+
 [verbs]                         # added to the built-in verb table
 verb.offer = { suggest = ["provide"] }
 ```
