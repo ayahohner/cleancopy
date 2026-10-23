@@ -85,3 +85,8 @@ def test_relative_clause_blocks_the_copula_condition(lint):
 def test_a_chain_of_pronouns_is_judged_once(lint):
     text = "You must commit to your categories to make decisions and build systems. But you must hold them humbly enough to revise them."
     assert len(lint(text, RULE)) == 1
+
+
+def test_the_verb_selects_among_tied_antecedents(lint):
+    assert lint("When the team got the rule, it decided to wait.", RULE) == []
+    assert len(lint("When the team got the rule, it was late.", RULE)) == 1
