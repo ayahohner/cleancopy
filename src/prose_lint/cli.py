@@ -1,6 +1,6 @@
 """prose-lint: check Markdown prose for verbs that do not fit their subjects,
-pronouns with more than one likely antecedent, and lists without a serial
-comma."""
+pronouns with more than one likely antecedent, lists without a serial comma,
+and phrasal verbs with more than one reading."""
 
 from __future__ import annotations
 

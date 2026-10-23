@@ -22,8 +22,16 @@ ratio = 0.95                    # flag when the runner-up has this share of the 
 [rules.serial-comma]
 allow = ["Games, Life and Utopia"]  # skips any sentence containing the phrase
 
+[rules.phrasal-verbs]
+allow = ["make up"]             # "verb particle prep", as the finding's data names it
+
 [verbs]                         # added to the built-in verb table
 verb.offer = { suggest = ["provide"] }
+
+[[phrasal]]                     # added to the built-in phrasal-verb table
+verb = "roll"
+particle = "back"
+readings = ["undo", "reduce"]
 ```
 """
 
@@ -43,6 +51,7 @@ class Config:
     lexicon: dict[str, list[str]] = field(default_factory=dict)
     rules: dict[str, dict] = field(default_factory=dict)
     verbs: dict = field(default_factory=dict)
+    phrasal: list[dict] = field(default_factory=list)
 
     def rule(self, name: str) -> dict:
         return self.rules.get(name, {})
@@ -67,4 +76,4 @@ def load(path: Path | None) -> Config:
     if path is None:
         return Config()
     data = tomllib.loads(path.read_text())
-    return Config(path.parent, data.get("include", []), data.get("lexicon", {}), data.get("rules", {}), data.get("verbs", {}))
+    return Config(path.parent, data.get("include", []), data.get("lexicon", {}), data.get("rules", {}), data.get("verbs", {}), data.get("phrasal", []))

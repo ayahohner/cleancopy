@@ -1,7 +1,7 @@
 [project]
 name = "prose-lint"
-version = "0.1.0"
-description = "A linter for prose: checks that verbs fit their subjects and that pronouns have one antecedent."
+version = "0.2.0"
+description = "A linter for prose: literal verbs, ambiguous pronouns, serial commas, and ambiguous phrasal verbs."
 requires-python = ">=3.12,<3.13"
 dependencies = [
     "en-core-web-trf @ https://github.com/explosion/spacy-models/releases/download/en_core_web_trf-3.8.0/en_core_web_trf-3.8.0-py3-none-any.whl",

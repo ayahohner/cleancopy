@@ -1,0 +1,195 @@
+# Phrasal verbs with two or more live readings, for the phrasal-verbs rule.
+#
+# verb        : the verb's lemma
+# object      : the direct object's lemma, or a list of them
+# particle    : the particle ("up" in "make up"), attached as a particle,
+#               an adverb, or a preposition
+# prep        : the preposition after the particle or the object
+# transitive  : true needs a direct object; false needs none
+# unless      : words whose presence settles the reading ("away" in "draw
+#               attention away from")
+# readings    : unambiguous rewrites, one per reading; "{object}" is replaced
+#               by the matched object
+# severity    : "info" for phrases whose reading the object usually settles
+
+[[phrasal]]
+verb = "draw"
+object = ["attention", "focus", "eye", "interest", "notice", "scrutiny"]
+prep = "from"
+unless = ["away"]
+readings = ["draw {object} away from", "attract {object} from"]
+
+[[phrasal]]
+verb = "take"
+particle = "away"
+prep = "from"
+transitive = false
+readings = ["detract from", "conclude from"]
+
+[[phrasal]]
+verb = "turn"
+prep = "on"
+transitive = false
+readings = ["depend on", "turn against", "switch on"]
+
+[[phrasal]]
+verb = "pass"
+particle = "on"
+transitive = true
+readings = ["pass along", "decline"]
+
+[[phrasal]]
+verb = "put"
+particle = "off"
+transitive = true
+readings = ["postpone", "deter"]
+
+[[phrasal]]
+verb = "turn"
+particle = "down"
+transitive = true
+readings = ["reject", "lower"]
+
+[[phrasal]]
+verb = "stand"
+particle = "up"
+prep = "to"
+readings = ["withstand", "confront"]
+
+[[phrasal]]
+verb = "let"
+particle = "down"
+transitive = true
+readings = ["disappoint", "lower"]
+
+[[phrasal]]
+verb = "cut"
+particle = "off"
+transitive = true
+readings = ["interrupt", "disconnect", "preclude"]
+
+[[phrasal]]
+verb = "make"
+particle = "up"
+transitive = true
+severity = "info"
+readings = ["constitute", "invent", "compensate for"]
+
+[[phrasal]]
+verb = "account"
+prep = "for"
+severity = "info"
+readings = ["explain", "make up (a share of)"]
+
+[[phrasal]]
+verb = "back"
+particle = "up"
+transitive = true
+severity = "info"
+readings = ["support", "copy", "reverse"]
+
+[[phrasal]]
+verb = "pick"
+particle = "up"
+transitive = true
+severity = "info"
+readings = ["collect", "learn", "resume", "detect"]
+
+[[phrasal]]
+verb = "hold"
+particle = "up"
+severity = "info"
+readings = ["delay", "withstand scrutiny", "support"]
+
+[[phrasal]]
+verb = "fall"
+particle = "out"
+prep = "of"
+severity = "info"
+readings = ["follow from", "drop out of"]
+
+[[phrasal]]
+verb = "bring"
+particle = "up"
+transitive = true
+severity = "info"
+readings = ["mention", "raise (a child)"]
+
+[[phrasal]]
+verb = "turn"
+particle = "over"
+transitive = true
+severity = "info"
+readings = ["hand over", "flip"]
+
+[[phrasal]]
+verb = "leave"
+particle = "off"
+transitive = true
+severity = "info"
+readings = ["omit", "stop"]
+
+[[phrasal]]
+verb = "go"
+particle = "over"
+severity = "info"
+readings = ["review", "exceed"]
+
+[[phrasal]]
+verb = "run"
+particle = "over"
+severity = "info"
+readings = ["exceed", "review", "hit"]
+
+[[phrasal]]
+verb = "sign"
+particle = "off"
+severity = "info"
+readings = ["approve", "end"]
+
+[[phrasal]]
+verb = "take"
+particle = "in"
+transitive = true
+severity = "info"
+readings = ["absorb", "deceive", "admit"]
+
+[[phrasal]]
+verb = "work"
+particle = "out"
+transitive = false
+severity = "info"
+readings = ["succeed", "exercise", "result"]
+
+[[phrasal]]
+verb = "check"
+particle = "out"
+severity = "info"
+readings = ["examine", "leave", "pass verification"]
+
+[[phrasal]]
+verb = "write"
+particle = "off"
+transitive = true
+severity = "info"
+readings = ["cancel", "dismiss"]
+
+[[phrasal]]
+verb = "set"
+particle = "off"
+transitive = true
+severity = "info"
+readings = ["trigger", "offset"]
+
+[[phrasal]]
+verb = "pull"
+particle = "off"
+transitive = true
+severity = "info"
+readings = ["achieve", "remove"]
+
+[[phrasal]]
+verb = "drop"
+particle = "off"
+severity = "info"
+readings = ["decline", "deliver", "fall asleep"]

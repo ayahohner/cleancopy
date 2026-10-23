@@ -1,15 +1,19 @@
 # prose-lint
 
 A linter for Markdown prose. It parses each sentence with spaCy's transformer
-model and checks three rules:
+model and checks four rules:
 
 - **literal-verbs**: a verb's subject must be the kind of thing the verb's
   literal sense takes. "The theorem draws the line" and "a function tolerates
-  delays" are flagged; "an AI agent tolerates delays" is not.
+  delays" are flagged; "an AI agent tolerates delays" is not. A pronoun
+  subject takes the class of the noun it clearly refers to.
 - **ambiguous-pronouns**: "it", "its", "they", "them", and "their" are flagged
   when their two most likely antecedents score nearly the same salience.
 - **serial-comma**: a list of three or more items needs a comma before its
   last "and" or "or".
+- **phrasal-verbs**: a phrasal verb with two live readings, such as "drew
+  attention from the budget" (diverted from it, or attracted from it), is
+  flagged with each reading as a rewrite.
 
 ## Install
 
@@ -17,7 +21,7 @@ prose-lint needs Python 3.12 and [uv](https://docs.astral.sh/uv/). Run it
 without installing:
 
 ```sh
-uvx --from git+https://github.com/ayahohner/prose-lint@v0.1.0 prose-lint posts/*.md
+uvx --from git+https://github.com/ayahohner/prose-lint@v0.2.0 prose-lint posts/*.md
 ```
 
 The first run downloads the spaCy model (about 450 MB) and WordNet.
@@ -50,8 +54,16 @@ ratio = 0.95                    # flag when the runner-up has this share of the 
 [rules.serial-comma]
 allow = ["Games, Life and Utopia"]  # skips any sentence containing the phrase
 
+[rules.phrasal-verbs]
+allow = ["make up"]             # "verb particle prep"
+
 [verbs]                         # added to the built-in table in src/prose_lint/data/verbs.toml
 verb.offer = { suggest = ["provide"] }
+
+[[phrasal]]                     # added to the built-in table in src/prose_lint/data/phrasal.toml
+verb = "roll"
+particle = "back"
+readings = ["undo", "reduce"]
 ```
 
 `<!-- prose-lint-disable literal-verbs -->` disables the named rules, or every
