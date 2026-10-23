@@ -9,6 +9,9 @@ model and checks four rules:
   subject takes the class of the noun it clearly refers to.
 - **ambiguous-pronouns**: "it", "its", "they", "them", and "their" are flagged
   when their two most likely antecedents score nearly the same salience.
+  Grammar rules out nouns first: "it" never names a person, "the cost of
+  applying it" is not the cost, "make it easier to" refers to nothing, and a
+  chain of pronouns is judged once.
 - **serial-comma**: a list of three or more items needs a comma before its
   last "and" or "or".
 - **phrasal-verbs**: a phrasal verb with two live readings, such as "drew

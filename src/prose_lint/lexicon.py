@@ -85,6 +85,14 @@ def person(lemma: str) -> bool:
     return bool(synsets) and "person.n.01" in _roots(synsets[0])
 
 
+@lru_cache(maxsize=None)
+def only_person(lemma: str) -> bool:
+    """Whether every common sense of the noun names a person, as for "colleague"
+    but not "compiler", which is also a program."""
+    synsets = _common_senses(wn.synsets(lemma.replace(" ", "_"), pos=wn.NOUN), lemma)
+    return bool(synsets) and all("person.n.01" in _roots(s) for s in synsets)
+
+
 def _common_senses(synsets: list, lemma: str) -> list:
     """The senses that do not name one individual, or all of them if none remain."""
     return [s for s in synsets if not _proper(s, lemma)] or synsets
@@ -119,6 +127,11 @@ class Lexicon:
         lemma = head.lemma_.lower()
         key, cls, source = found or (lemma, wordnet_class(lemma), "wordnet")
         return Subject(" ".join(t.text for t in _phrase(head)), key, cls, source)
+
+    def entry(self, head: Token) -> str | None:
+        """The class the lexicon gives the noun, or None when it has no entry."""
+        found = self._lookup(head)
+        return found[1] if found else None
 
     def _lookup(self, head: Token) -> tuple[str, str, str] | None:
         key = next((k for k in _keys(head) if k in self.table), None)

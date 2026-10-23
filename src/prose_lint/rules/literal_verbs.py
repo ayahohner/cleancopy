@@ -54,7 +54,7 @@ def check(doc: Doc, seg: Segment, lexicon: Lexicon, verbs: VerbTable, allow: lis
 
 def _subjects(head: Token, seg: Segment, lexicon: Lexicon, ratio: float) -> tuple[list[Subject], str | None]:
     """The classified subject, or the nouns a pronoun subject clearly refers to."""
-    found = antecedent(head, ratio) if head.lower_ in NUMBER else None
+    found = antecedent(head, ratio, lexicon) if head.lower_ in NUMBER else None
     if found is None:
         return [lexicon.classify(head, seg.placeholders)], None
     return [lexicon.classify(m, seg.placeholders) for m in found.members], head.text

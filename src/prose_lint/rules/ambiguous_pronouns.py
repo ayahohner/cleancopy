@@ -14,15 +14,16 @@ from spacy.tokens import Doc
 
 from ..coreference import WINDOW, candidates
 from ..findings import Hit
+from ..lexicon import Lexicon
 from ..markdown import Segment
 
 NAME = "ambiguous-pronouns"
 CONTEXT = WINDOW  # candidates come from this many preceding sentences
 
 
-def check(doc: Doc, seg: Segment, ratio: float) -> Iterator[Hit]:
+def check(doc: Doc, seg: Segment, ratio: float, lexicon: Lexicon) -> Iterator[Hit]:
     for tok in doc:
-        ranked = candidates(tok)
+        ranked = candidates(tok, lexicon=lexicon)
         tied = [seg.restore(c.text) for c in ranked if c.score >= ratio * ranked[0].score]
         if len(tied) >= 2:
             message = f'"{tok.text}" could refer to {" or ".join(map(repr, tied))}; name the noun'

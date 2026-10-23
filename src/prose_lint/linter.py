@@ -22,9 +22,10 @@ class Linter:
         self.cache_dir = cache_dir
         self.context = {r.NAME: r.CONTEXT for r in (literal_verbs, ambiguous_pronouns, serial_comma, phrasal_verbs)}
         ratio = cfg.rule(ambiguous_pronouns.NAME).get("ratio", 0.95)
+        lexicon = Lexicon(cfg.lexicon)
         checks = {
-            literal_verbs.NAME: lambda: partial(literal_verbs.check, lexicon=Lexicon(cfg.lexicon), verbs=VerbTable.load(cfg.verbs), allow=cfg.allow(literal_verbs.NAME), ratio=ratio),
-            ambiguous_pronouns.NAME: lambda: partial(ambiguous_pronouns.check, ratio=ratio),
+            literal_verbs.NAME: lambda: partial(literal_verbs.check, lexicon=lexicon, verbs=VerbTable.load(cfg.verbs), allow=cfg.allow(literal_verbs.NAME), ratio=ratio),
+            ambiguous_pronouns.NAME: lambda: partial(ambiguous_pronouns.check, ratio=ratio, lexicon=lexicon),
             serial_comma.NAME: lambda: partial(serial_comma.check, allow=cfg.rule(serial_comma.NAME).get("allow", [])),
             phrasal_verbs.NAME: lambda: partial(phrasal_verbs.check, table=phrasal_verbs.load(cfg.phrasal), allow=cfg.rule(phrasal_verbs.NAME).get("allow", [])),
         }
