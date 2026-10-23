@@ -6,6 +6,9 @@ single verb has a literal sense with any subject, so a phrase matches on its
 particle, preposition, object, or complement; a slot may list several words,
 as "set" does with the objects of authority ("set the hours"). A phrase with ``needs = "any"``
 exempts an idiom, such as "stand for", from its verb's entry.
+
+``needs`` names a set in ``SETS``, such as "animate", or lists classes and
+sets: ``needs = ["concrete", "text", "idea"]``.
 """
 
 from __future__ import annotations
@@ -16,10 +19,40 @@ from importlib import resources
 
 from spacy.tokens import Token
 
-ANIMATE = "animate"  # a person, an organization, or an AI agent
-CONCRETE = "concrete"  # a physical object, a mechanism, or an agent
-SPEAKER = "speaker"  # an agent, or a text that carries words
+from .lexicon import (
+    ABSTRACT, AGENT, DISPLAY, EVIDENCE, IDEA, INSTITUTION, MECHANISM, MIXED, PHYSICAL, TEXT, UNKNOWN,
+)
+
+# Named sets of the subject classes a verb's literal sense takes.
+ANIMATE = "animate"  # an agent: "decide", "want", "buy"
+CONCRETE = "concrete"  # a body or a machine: "move", "sit", "grant"
+SPEAKER = "speaker"  # what carries words: "ask", "say"
+EVIDENTIAL = "evidential"  # what supports a claim: "show that", "suggest"
+PROPOSITIONAL = "propositional"  # what has content: "assume", "imply"
+NORMATIVE = "normative"  # what sets rules: "dictate", "treat as"
 ANY = "any"  # an exemption
+
+SETS = {
+    ANIMATE: (AGENT,),
+    CONCRETE: (AGENT, PHYSICAL, DISPLAY, MECHANISM),
+    SPEAKER: (AGENT, TEXT, DISPLAY),
+    EVIDENTIAL: (AGENT, TEXT, DISPLAY, EVIDENCE),
+    PROPOSITIONAL: (AGENT, TEXT, IDEA, EVIDENCE),
+    NORMATIVE: (AGENT, TEXT, INSTITUTION),
+}
+_NEVER_FLAGGED = (MIXED, UNKNOWN)
+
+NOUNS = {
+    AGENT: "a person, an organization, or an AI agent",
+    PHYSICAL: "a physical object",
+    DISPLAY: "a display",
+    MECHANISM: "a mechanism",
+    TEXT: "a text",
+    EVIDENCE: "evidence",
+    IDEA: "an idea",
+    INSTITUTION: "an institution",
+    ABSTRACT: "an abstraction",
+}
 
 _SLOTS = {"particle": ("prt",), "prep": ("prep", "prt"), "object": ("dobj", "obj", "attr")}
 _COMPLEMENTS = ("oprd", "xcomp", "ccomp")
@@ -27,10 +60,26 @@ _COMPLEMENTS = ("oprd", "xcomp", "ccomp")
 
 @dataclass(frozen=True)
 class Requirement:
-    needs: str  # ANIMATE or CONCRETE
+    takes: tuple[str, ...]  # the subject classes the literal sense takes
     phrase: str  # the verb or phrase as it matched
     suggest: tuple[str, ...] = ()
     severity: str | None = None  # overrides the rule's severity
+
+    def fails(self, cls: str) -> bool:
+        return cls not in self.takes and cls not in _NEVER_FLAGGED
+
+    def described(self) -> str:
+        """ "a person, an organization, or an AI agent", or each class named in turn."""
+        if self.takes == (AGENT,):
+            return NOUNS[AGENT]
+        names = [NOUNS[c] for c in self.takes if c != AGENT] + ["an agent"]
+        return ", ".join(names[:-1]) + ", or " + names[-1]
+
+
+def classes(needs: str | list[str]) -> tuple[str, ...]:
+    """The classes a ``needs`` entry names: a named set, or a list of classes and sets."""
+    names = [needs] if isinstance(needs, str) else needs
+    return tuple(dict.fromkeys(c for n in names for c in SETS.get(n, (n,))))
 
 
 @dataclass
@@ -48,7 +97,7 @@ class VerbTable:
         entry, words = self._lookup(verb)
         if entry is None or entry.get("needs") == ANY:
             return None
-        return Requirement(entry.get("needs", ANIMATE), words, tuple(entry.get("suggest", ())), entry.get("severity"))
+        return Requirement(classes(entry.get("needs", ANIMATE)), words, tuple(entry.get("suggest", ())), entry.get("severity"))
 
     def _lookup(self, verb: Token) -> tuple[dict | None, str]:
         lemma = verb.lemma_.lower()
@@ -61,11 +110,16 @@ class VerbTable:
 
 def _phrase_words(verb: Token, phrase: dict) -> str | None:
     """The phrase as it matched, or None when a slot is empty."""
-    kids = list(verb.children)
+    kids = _following(verb)
     words = [phrase["verb"], *_slot_words(kids, phrase)]
     if phrase.get("complement"):
         words.append(_filler(kids, _COMPLEMENTS, None) and "")
     return None if None in words else " ".join(w for w in words if w)
+
+
+def _following(verb: Token) -> list[Token]:
+    """The verb's children, less a preposition before it: "At that point, X looks like"."""
+    return [k for k in verb.children if k.dep_ not in ("prep", "prt") or k.i > verb.i]
 
 
 def _slot_words(kids: list[Token], phrase: dict) -> list[str | None]:

@@ -77,11 +77,46 @@ def test_contribute_needs_an_agent_unless_causal(lint):
     "A job sets the hours and assigns the problems.",
     "Markets reward output.",
     "A job names the role.",
-    "The tradition grants permission to look.",
+    "The theorem grants permission to look.",
 ])
 def test_abstractions_cannot_exercise_authority(lint, text):
     # WordNet gives "market" a sense for its customers, so only the lexicon makes it abstract.
-    assert lint(text, RULE, lexicon=LEXICON | {"abstract": ["market"]})
+    assert lint(text, RULE, lexicon=LEXICON | {"abstract": ["market", "theorem"]})
+
+
+@pytest.mark.parametrize(("text", "flagged"), [
+    ("Custom dictates the seating.", False),
+    ("The tradition grants permission to look.", False),
+    ("Money buys real-world actuation rights.", True),
+    ("The economy rewarded cognition.", True),
+])
+def test_institutions_set_rules_but_do_not_act(lint, text, flagged):
+    assert bool(lint(text, RULE)) == flagged
+
+
+@pytest.mark.parametrize(("text", "flagged"), [
+    ("Research shows that the effect is small.", False),
+    ("Watching a community share leadership shows that hierarchy is not the only choice.", False),
+    ("The study suggests that the effect is small.", False),
+    ("The server confirms the move.", False),
+    ("The abstraction suggests that the effect is small.", True),
+    ("Scale reveals the hard parts.", True),
+])
+def test_evidence_shows_that(lint, text, flagged):
+    assert bool(lint(text, RULE, lexicon={"abstract": ["abstraction", "scale"]})) == flagged
+
+
+@pytest.mark.parametrize(("text", "flagged"), [
+    ("Billions of people see the feed.", False),
+    ("Most advice assumes that the choices are visible.", False),
+    ("The effects principle assumes that outputs are final.", False),
+    ("Blueprints and procedures guide the agents.", False),
+    ("Memory reaches for the responsibilities of databases.", True),
+    ("The function sees the record.", True),
+    ("At that point, the problems look like distributed systems.", False),
+])
+def test_perception_content_and_quantities(lint, text, flagged):
+    assert bool(lint(text, RULE, lexicon=LEXICON)) == flagged
 
 
 @pytest.mark.parametrize("text", [
@@ -162,7 +197,7 @@ def test_abstractions_cannot_move_or_show(lint, text):
     "The server moves the file.",
     "A person shows the record.",
 ])
-def test_interface_elements_and_concrete_things_move_and_show(lint, text):
+def test_displays_and_concrete_things_move_and_show(lint, text):
     assert lint(text, RULE) == []
 
 
@@ -170,9 +205,18 @@ def test_an_editor_is_a_person(lint):
     assert lint("The lead story was chosen by an editor.", RULE) == []
 
 
-def test_show_with_a_clause_is_info(lint):
-    [finding] = lint("The theorem shows that the order is fixed.", RULE, lexicon=LEXICON | {"abstract": ["theorem"]})
-    assert finding.severity == "info"
+def test_an_abstraction_cannot_show_that(lint):
+    assert len(lint("The theorem shows that the order is fixed.", RULE, lexicon=LEXICON | {"abstract": ["theorem"]})) == 1
+
+
+@pytest.mark.parametrize("text", [
+    "The gauge indicates that the tank is full.",
+    "That the solver halts proves nothing.",
+    "Protecting one afternoon may reveal whether the work satisfies.",
+    "The aim is to see enough possibilities.",
+])
+def test_things_acts_and_facts_can_indicate(lint, text):
+    assert lint(text, RULE) == []
 
 
 def test_project_lexicon_overrides_the_builtin_one(lint):

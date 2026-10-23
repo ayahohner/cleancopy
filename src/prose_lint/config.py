@@ -6,7 +6,10 @@ include = ["src/content/posts/*.md"]
 [lexicon]                       # what kind of thing each noun names
 agent = ["AI agent", "model"]
 physical = ["server", "phone"]
-interface = ["presentation"]    # can move and show, as a window or a chart can
+display = ["presentation"]      # can move and show, as a window or a chart can
+evidence = ["benchmark"]        # can show, suggest, or confirm that
+idea = ["plan"]                 # can guide and assume
+institution = ["market"]        # can require and permit, not want or buy
 mechanism = ["compiler", "runtime"] # performs operations, cannot decide
 abstract = ["sequencer", "record"]
 text = ["rule", "message"]        # can ask or say, not decide

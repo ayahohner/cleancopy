@@ -1,10 +1,17 @@
 # Verbs and phrases whose literal sense restricts the subject.
 #
-# needs = "animate"  : a person, an organization, or an AI agent or model
-# needs = "concrete" : a physical object, an interface element, a mechanism
-#                      (software that performs operations), or an agent
-# needs = "speaker"  : an agent, or a text that carries words, such as a message
-#                      or a rule ("the message asks", "the rules say")
+# needs = "animate"       : a person, an organization, or an AI agent or model
+# needs = "concrete"      : a physical object, a display, a mechanism (software
+#                           that performs operations), or an agent
+# needs = "speaker"       : an agent, a display, or a text that carries words,
+#                           such as a message or a rule ("the rules say")
+# needs = "evidential"    : a speaker or evidence ("the study shows that")
+# needs = "propositional" : an agent, a text, an idea, or evidence ("the
+#                           principle assumes")
+# needs = "normative"     : an agent, a text, or an institution ("custom
+#                           dictates")
+# needs = [...]           : a list of classes and sets, such as
+#                           ["concrete", "text", "idea"]
 # severity = "info"  : a figure that reads as near-literal; worth fixing, not failing
 #
 # Suggestions name literal verbs for inanimate subjects.
@@ -93,8 +100,17 @@ needs = "concrete"
 needs = "concrete"
 suggest = ["change", "turn to (for a topic)", "is moved (passive)"]
 [verb.show]
-needs = "concrete"
+needs = ["concrete", "evidential"]
 suggest = ["contain", "indicate", "is visible in"]
+# Perception needs a perceiver.
+[verb.see]
+suggest = ["detect", "read"]
+[verb.watch]
+suggest = ["monitor", "subscribe to"]
+[verb.hear]
+suggest = ["receive"]
+[verb.listen]
+suggest = ["receive", "wait for"]
 [verb.fight]
 suggest = ["conflict with"]
 [verb.compete]
@@ -107,7 +123,35 @@ suggest = ["is degraded by"]
 [verb.embrace]
 suggest = ["include", "adopt"]
 [verb.dictate]
+needs = "normative"
 suggest = ["determine"]
+# Evidence demonstrates; an abstraction does not. A thing or a mechanism can
+# too: "the gauge indicates that the tank is full", "the server confirms the
+# move", "a module suggests alternatives".
+[verb.demonstrate]
+needs = ["concrete", "evidential"]
+severity = "info"
+suggest = ["is evidence that", "implies"]
+[verb.establish]
+needs = ["concrete", "evidential"]
+severity = "info"
+suggest = ["is evidence that", "implies"]
+[verb.indicate]
+needs = ["concrete", "evidential"]
+severity = "info"
+suggest = ["implies", "is a sign that"]
+[verb.confirm]
+needs = ["concrete", "evidential"]
+severity = "info"
+suggest = ["is evidence that", "is consistent with"]
+[verb.reveal]
+needs = ["concrete", "evidential"]
+severity = "info"
+suggest = ["makes visible", "exposes (for a test)"]
+[verb.suggest]
+needs = ["concrete", "evidential"]
+severity = "info"
+suggest = ["is evidence that", "implies"]
 
 # Figures built from a verb and a particle, preposition, object, or naming
 # complement. The single verb has literal senses with any subject.
@@ -141,13 +185,15 @@ verb = "keep"
 object = "track"
 suggest = ["record", "store"]
 
-# "Research shows that" is the near-literal sense "demonstrate".
 [[phrase]]
-verb = "show"
-complement = true
-needs = "concrete"
-severity = "info"
-suggest = ["establish", "imply", "is evidence that"]
+verb = "look"
+prep = "at"
+suggest = ["read", "inspect (for a tool)"]
+
+[[phrase]]
+verb = "reach"
+prep = "for"
+suggest = ["extends to", "takes on"]
 
 
 # Left out on purpose: verbs with a literal sense for any subject in technical
@@ -165,8 +211,10 @@ suggest = ["establish", "imply", "is evidence that"]
 [verb.face]
 suggest = ["have", "is subject to"]
 [verb.treat]
+needs = "normative"
 suggest = ["count as", "handle as"]
 [verb.assume]
+needs = "propositional"
 severity = "info"
 suggest = ["is valid only if", "requires"]
 [verb.respect]
@@ -205,14 +253,15 @@ suggest = ["benefit", "is rewarded by (passive)"]
 needs = "concrete"
 suggest = ["harm", "is punished by (passive)"]
 [verb.grant]
-needs = "concrete"
+needs = ["concrete", "normative"]
 suggest = ["allow", "is granted by (passive)"]
 [verb.award]
 needs = "concrete"
 [verb.hire]
 [verb.appoint]
+# Procedures, maps, and blueprints guide as well as people do.
 [verb.guide]
-needs = "concrete"
+needs = ["concrete", "text", "idea"]
 severity = "info"
 suggest = ["determine", "constrain"]
 [verb.offer]

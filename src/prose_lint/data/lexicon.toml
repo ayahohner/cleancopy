@@ -1,12 +1,47 @@
 # Built-in lexicon entries. A project's prose-lint.toml overrides any word here.
 #
-# Interface elements: what a screen or a page shows, which can move or show
-# as a physical object can.
-interface = [
+# Displays: what presents an image to the eye, which can move or show as a
+# physical object can. A billboard or a television is already physical.
+display = [
   "UI", "user interface", "interface", "app", "browser", "terminal", "console",
   "window", "dialog", "modal", "popup", "pop-up", "menu", "button", "toolbar", "sidebar",
   "page", "screen", "view", "panel", "pane", "tab", "banner", "toast", "notification",
   "tooltip", "cursor", "pointer", "icon", "badge", "widget", "slider", "checkbox", "canvas",
   "chart", "graph", "plot", "diagram", "figure", "table", "map", "dashboard", "display",
   "image", "picture", "screenshot", "animation", "illustration", "graphic", "slide",
+]
+
+# Evidence: what supports a claim, which can show, suggest, or establish that
+# something is so.
+evidence = [
+  "evidence", "proof", "study", "research", "experiment", "trial", "result", "finding", "data", "datum",
+  "example", "counterexample", "case study", "comparison", "observation", "measurement", "survey",
+  "analysis", "benchmark", "statistic", "fact", "existence", "symptom", "record", "history",
+  "experience", "evaluation", "demonstration", "replication", "test result", "testing", "monitoring",
+  "feedback", "confirmation", "signal", "indicator", "metric", "action", "behavior", "behaviour", "conduct",
+  "response", "reaction", "reply", "refusal", "pattern",
+]
+
+# Software that performs operations and cannot decide. WordNet reads most of
+# these as people or as abstractions.
+mechanism = [
+  "module", "function", "method", "program", "compiler", "interpreter", "runtime", "service",
+  "daemon", "script", "library", "API", "endpoint", "parser", "scheduler", "dispatcher", "solver",
+  "resolver", "evaluator", "sequencer", "validator", "linter", "router", "handler",
+]
+
+# Texts that the most frequent WordNet sense misses: a blog post is not a pole.
+text = [
+  "post", "blog post", "article", "essay", "paper", "chapter", "section", "appendix", "footnote",
+  "documentation", "spec", "specification", "README", "changelog", "manual", "guide",
+]
+
+# Institutions: practices that exist because people keep acting as if they
+# do. They can require or permit, but not want, buy, or reward; people act
+# through them. Courts, governments, and companies are organizations, so
+# agents.
+institution = [
+  "market", "economy", "money", "currency", "capitalism", "legal system", "price system",
+  "tradition", "custom", "convention", "norm", "religion", "marriage", "property", "ownership",
+  "citizenship", "credit", "debt", "property right",
 ]

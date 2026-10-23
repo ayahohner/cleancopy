@@ -42,6 +42,11 @@ def _inherited(verb: Token, depth: int) -> Token | None:
     gerund = verb.tag_ == "VBG"
     if verb.dep_ == "relcl" or (verb.dep_ == "acl" and gerund):
         return verb.head
-    if verb.dep_ in ("conj", "xcomp") or (verb.dep_ == "advcl" and gerund):
+    if _controlled(verb) or (verb.dep_ == "advcl" and gerund):
         return subject_of(verb.head, depth + 1)
     return None
+
+
+def _controlled(verb: Token) -> bool:
+    """ "decides and records", "tries to decide"; not "the aim is to see", where whoever aims sees."""
+    return verb.dep_ == "conj" or (verb.dep_ == "xcomp" and verb.head.lemma_ != "be")

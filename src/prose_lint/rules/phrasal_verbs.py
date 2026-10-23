@@ -46,7 +46,7 @@ def check(doc: Doc, seg: Segment, table: list[dict], allow: list[str]) -> Iterat
 
 def _match(verb: Token, table: list[dict]) -> tuple[dict, str | None] | None:
     lemma = verb.lemma_.lower()
-    kids = list(verb.children)
+    kids = [k for k in verb.children if k.dep_ not in _PARTICLES or k.i > verb.i]
     obj = _object(kids)
     for entry in table:
         if entry["verb"] == lemma and _fits(entry, kids, obj):
