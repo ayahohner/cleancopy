@@ -35,6 +35,18 @@ verb.offer = { suggest = ["provide"] }
 verb = "roll"
 particle = "back"
 readings = ["undo", "reduce"]
+
+[rules.constructions]
+allow = ["comma-not"]           # built-in constructions to permit
+
+[[construction]]                # a spaCy DependencyMatcher pattern to ban
+name = "at-the-end-of-the-day"
+message = "say what finally matters"
+pattern = [
+  { RIGHT_ID = "end", RIGHT_ATTRS = { LOWER = "end" } },
+  { LEFT_ID = "end", REL_OP = ">", RIGHT_ID = "of", RIGHT_ATTRS = { LOWER = "of" } },
+  { LEFT_ID = "of", REL_OP = ">", RIGHT_ID = "day", RIGHT_ATTRS = { LOWER = "day" } },
+]
 ```
 """
 
@@ -55,6 +67,7 @@ class Config:
     rules: dict[str, dict] = field(default_factory=dict)
     verbs: dict = field(default_factory=dict)
     phrasal: list[dict] = field(default_factory=list)
+    constructions: list[dict] = field(default_factory=list)
 
     def rule(self, name: str) -> dict:
         return self.rules.get(name, {})
@@ -79,4 +92,4 @@ def load(path: Path | None) -> Config:
     if path is None:
         return Config()
     data = tomllib.loads(path.read_text())
-    return Config(path.parent, data.get("include", []), data.get("lexicon", {}), data.get("rules", {}), data.get("verbs", {}), data.get("phrasal", []))
+    return Config(path.parent, data.get("include", []), data.get("lexicon", {}), data.get("rules", {}), data.get("verbs", {}), data.get("phrasal", []), data.get("construction", []))

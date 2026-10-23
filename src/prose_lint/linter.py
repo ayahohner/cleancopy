@@ -10,17 +10,17 @@ from .findings import Finding, Hit
 from .lexicon import Lexicon
 from .markdown import Segment, segments
 from .nlp import parse
-from .rules import ambiguous_pronouns, literal_verbs, phrasal_verbs, serial_comma
+from .rules import ambiguous_pronouns, constructions, literal_verbs, phrasal_verbs, serial_comma
 from .verbs import VerbTable
 
-RULES = (literal_verbs.NAME, ambiguous_pronouns.NAME, serial_comma.NAME, phrasal_verbs.NAME)
+RULES = (literal_verbs.NAME, ambiguous_pronouns.NAME, serial_comma.NAME, phrasal_verbs.NAME, constructions.NAME)
 
 
 class Linter:
     def __init__(self, cfg: Config, cache_dir: Path | None = None, only: list[str] | None = None):
         self.cfg = cfg
         self.cache_dir = cache_dir
-        self.context = {r.NAME: r.CONTEXT for r in (literal_verbs, ambiguous_pronouns, serial_comma, phrasal_verbs)}
+        self.context = {r.NAME: r.CONTEXT for r in (literal_verbs, ambiguous_pronouns, serial_comma, phrasal_verbs, constructions)}
         ratio = cfg.rule(ambiguous_pronouns.NAME).get("ratio", 0.95)
         lexicon = Lexicon(cfg.lexicon)
         verbs = VerbTable.load(cfg.verbs)
@@ -29,6 +29,7 @@ class Linter:
             ambiguous_pronouns.NAME: lambda: partial(ambiguous_pronouns.check, ratio=ratio, lexicon=lexicon, verbs=verbs),
             serial_comma.NAME: lambda: partial(serial_comma.check, allow=cfg.rule(serial_comma.NAME).get("allow", [])),
             phrasal_verbs.NAME: lambda: partial(phrasal_verbs.check, table=phrasal_verbs.load(cfg.phrasal), allow=cfg.rule(phrasal_verbs.NAME).get("allow", [])),
+            constructions.NAME: lambda: partial(constructions.check, allow=cfg.rule(constructions.NAME).get("allow", []), patterns=cfg.constructions),
         }
         enabled = [r for r in RULES if cfg.severity(r) != "off" and (only is None or r in only)]
         self.checks = {r: checks[r]() for r in enabled}

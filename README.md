@@ -1,7 +1,7 @@
 # prose-lint
 
 A linter for Markdown prose. It parses each sentence with spaCy's transformer
-model and checks four rules:
+model and checks five rules:
 
 - **literal-verbs**: a verb's subject must be the kind of thing the verb's
   literal sense takes. "The theorem draws the line" and "a function tolerates
@@ -17,6 +17,11 @@ model and checks four rules:
 - **phrasal-verbs**: a phrasal verb with two live readings, such as "drew
   attention from the budget" (diverted from it, or attracted from it), is
   flagged with each reading as a rewrite.
+- **constructions**: banned sentence constructions, matched in the parse
+  rather than the words. Built in: contrast by negation ("It's a protocol,
+  not a library", "not X but Y", "It isn't X. It's Y.") and "Knowing X tells
+  you Y". A project adds its own as spaCy
+  [DependencyMatcher](https://spacy.io/api/dependencymatcher) patterns.
 
 ## Install
 
@@ -62,6 +67,18 @@ allow = ["Games, Life and Utopia"]  # skips any sentence containing the phrase
 
 [rules.phrasal-verbs]
 allow = ["make up"]             # "verb particle prep"
+
+[rules.constructions]
+allow = ["comma-not"]           # built-ins to permit: comma-not, not-but, not-then-is, gerund-tells-you
+
+[[construction]]                # a DependencyMatcher pattern to ban; the first node is the flagged word
+name = "at-the-end-of-the-day"
+message = "say what finally matters"
+pattern = [
+  { RIGHT_ID = "end", RIGHT_ATTRS = { LOWER = "end" } },
+  { LEFT_ID = "end", REL_OP = ">", RIGHT_ID = "of", RIGHT_ATTRS = { LOWER = "of" } },
+  { LEFT_ID = "of", REL_OP = ">", RIGHT_ID = "day", RIGHT_ATTRS = { LOWER = "day" } },
+]
 
 [verbs]                         # added to the built-in table in src/prose_lint/data/verbs.toml
 verb.offer = { suggest = ["provide"] }
