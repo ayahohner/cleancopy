@@ -3,7 +3,7 @@
 # Interface elements: what a screen or a page shows, which can move or show
 # as a physical object can.
 interface = [
-  "UI", "user interface", "interface", "app", "browser", "terminal", "console", "editor",
+  "UI", "user interface", "interface", "app", "browser", "terminal", "console",
   "window", "dialog", "modal", "popup", "pop-up", "menu", "button", "toolbar", "sidebar",
   "page", "screen", "view", "panel", "pane", "tab", "banner", "toast", "notification",
   "tooltip", "cursor", "pointer", "icon", "badge", "widget", "slider", "checkbox", "canvas",

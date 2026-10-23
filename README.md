@@ -21,7 +21,7 @@ prose-lint needs Python 3.12 and [uv](https://docs.astral.sh/uv/). Run it
 without installing:
 
 ```sh
-uvx --from git+https://github.com/ayahohner/prose-lint@v0.2.0 prose-lint posts/*.md
+uvx --from git+https://github.com/ayahohner/prose-lint@v0.2.1 prose-lint posts/*.md
 ```
 
 The first run downloads the spaCy model (about 450 MB) and WordNet.

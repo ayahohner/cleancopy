@@ -166,6 +166,10 @@ def test_interface_elements_and_concrete_things_move_and_show(lint, text):
     assert lint(text, RULE) == []
 
 
+def test_an_editor_is_a_person(lint):
+    assert lint("The lead story was chosen by an editor.", RULE) == []
+
+
 def test_show_with_a_clause_is_info(lint):
     [finding] = lint("The theorem shows that the order is fixed.", RULE, lexicon=LEXICON | {"abstract": ["theorem"]})
     assert finding.severity == "info"
