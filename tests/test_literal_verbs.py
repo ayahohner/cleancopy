@@ -111,3 +111,36 @@ def test_proper_noun_senses_do_not_make_a_word_animate():
     from prose_lint.lexicon import ABSTRACT, wordnet_class
 
     assert wordnet_class("job") == ABSTRACT
+
+
+@pytest.mark.parametrize("text", [
+    "Each seal closes a stratum. It sits between strata.",
+    "Choices and seals are records. They pay for coordination.",
+])
+def test_pronoun_subjects_take_their_antecedents_class(lint, text):
+    [finding] = lint(text, RULE, lexicon=LEXICON)
+    assert finding.data["pronoun"] in ("It", "They")
+    assert finding.context == text.split(". ")[0] + "."
+
+
+@pytest.mark.parametrize("text", [
+    "An AI agent reads the seal. It decides the order.",
+    "The function and the AI agent are listed. They decide the order.",  # one conjunct is an agent
+    "It sits between strata.",  # no antecedent
+])
+def test_pronoun_subjects_with_a_fitting_or_no_antecedent(lint, text):
+    assert lint(text, RULE, lexicon=LEXICON) == []
+
+
+@pytest.mark.parametrize("text", [
+    "This matters for the seal because it tells you where to start.",  # "it" follows "this"
+    "A person growing up has to set goals they care about.",  # singular they; goals do not care
+    "A person reads the seals. They decide the order.",  # singular they ties with "seals"
+])
+def test_pronoun_subjects_that_readers_resolve_elsewhere(lint, text):
+    assert lint(text, RULE, lexicon=LEXICON) == []
+
+
+def test_pronoun_chains_reach_a_noun(lint):
+    [finding] = lint("The seal closes a stratum, and it holds. It sits between strata.", RULE, lexicon=LEXICON)
+    assert finding.data["subject"] == "seal"

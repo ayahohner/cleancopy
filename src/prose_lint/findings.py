@@ -15,6 +15,7 @@ class Hit:
     message: str
     data: dict
     severity: str | None = None  # overrides the rule's severity
+    context: int | None = None  # overrides the rule's count of preceding sentences
 
 
 @dataclass

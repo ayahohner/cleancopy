@@ -26,6 +26,16 @@ without weighing salience:
   agrees: "a warehouse can promise its own stock".
 - A subject inside a subordinate clause scores as an oblique, so the main
   clause's subject leads, as centering theory predicts.
+
+One more filter: an argument of a relative clause cannot refer to the noun
+the clause modifies ("goals they care about" are not caring).
+
+``antecedent``, which picks one noun for another rule to check, widens the
+candidates in two ways that make it decline more often. It ranks earlier
+pronouns, so that "it" in "this matters because it tells you" follows
+"this", and "it" after "it" follows the chain to a noun. And it lets "they"
+refer to one person (singular they), so that "a person ... they" is not
+resolved to a plural noun nearby.
 """
 
 from __future__ import annotations
@@ -34,12 +44,14 @@ from dataclasses import dataclass
 
 from spacy.tokens import Span, Token
 
-from .grammar import subject_of
+from .grammar import RELATIVE, subject_of
+from .lexicon import person
 from .markdown import PLACEHOLDER
 
 WINDOW = 1  # candidates come from this many preceding sentences
 
 NUMBER = {"it": "sg", "its": "sg", "they": "pl", "them": "pl", "their": "pl"}
+_DEMONSTRATIVE = {"this": "sg", "that": "sg", "these": "pl", "those": "pl"}
 _TAG_NUMBER = {"NN": "sg", "NNP": "sg", "NNS": "pl", "NNPS": "pl"}
 _EXPLETIVE_HEADS = {"be", "seem", "appear", "take", "make", "follow", "turn", "matter", "help"}
 _EXTRAPOSED = {"to", "that", "whether", "if"}
@@ -75,22 +87,36 @@ class Candidate:
         return [self.token, *self.token.conjuncts] if " and " in self.text else [self.token]
 
 
-def candidates(tok: Token) -> list[Candidate]:
+def candidates(tok: Token, inclusive: bool = False) -> list[Candidate]:
     """The ranked antecedents of ``tok``, or none when ``tok`` is not a pronoun
-    this module resolves or when grammar alone resolves it."""
+    this module resolves or when grammar alone resolves it. With ``inclusive``,
+    earlier pronouns and, for "they", singular persons count too."""
     if _resolved(tok):
         return []
     sents = list(tok.doc.sents)
     i = next(j for j, s in enumerate(sents) if s.start <= tok.i < s.end)
-    return _Pronoun(tok, _parenthesized(tok.doc)).rank(sents[max(0, i - WINDOW) : i + 1])
+    return _Pronoun(tok, _parenthesized(tok.doc), inclusive).rank(sents[max(0, i - WINDOW) : i + 1])
 
 
 def antecedent(tok: Token, ratio: float) -> Candidate | None:
-    """The candidate a reader picks for ``tok``, or None when none is clear."""
-    ranked = candidates(tok)
-    if not ranked or (len(ranked) > 1 and ranked[1].score >= ratio * ranked[0].score):
+    """The noun a reader picks for ``tok``, or None when none is clear or the
+    pronoun follows a demonstrative such as "this". An earlier pronoun counts
+    as the noun it refers to, so "it" does not tie with its own antecedent."""
+    referents: dict[str, tuple[float, Candidate | None]] = {}
+    for c in candidates(tok, inclusive=True):  # highest score first
+        noun = _referent(c, ratio)
+        referents.setdefault(noun.token.lemma_.lower() if noun else f"#{c.token.i}", (c.score, noun))
+    ranked = list(referents.values())
+    if not ranked or (len(ranked) > 1 and ranked[1][0] >= ratio * ranked[0][0]):
         return None
-    return ranked[0]
+    return ranked[0][1]
+
+
+def _referent(c: Candidate, ratio: float) -> Candidate | None:
+    """The noun candidate ``c`` stands for, or None for a demonstrative or an unclear pronoun."""
+    if c.token.pos_ != "PRON":
+        return c
+    return antecedent(c.token, ratio) if c.token.lower_ in NUMBER else None
 
 
 def _resolved(tok: Token) -> bool:
@@ -138,7 +164,14 @@ def _local_subject_agrees(tok: Token) -> bool:
 
 
 def _number(tok: Token) -> str | None:
+    if tok.pos_ == "PRON":
+        return NUMBER.get(tok.lower_) or _DEMONSTRATIVE.get(tok.lower_)
     return "sg" if PLACEHOLDER.fullmatch(tok.text) else _TAG_NUMBER.get(tok.tag_)
+
+
+def _person(tok: Token) -> bool:
+    """A singular noun that singular "they" can refer to."""
+    return _number(tok) == "sg" and (tok.ent_type_ == "PERSON" or (tok.pos_ == "NOUN" and person(tok.lemma_.lower())))
 
 
 def _parenthesized(doc) -> set[int]:
@@ -151,8 +184,9 @@ def _parenthesized(doc) -> set[int]:
 
 
 class _Pronoun:
-    def __init__(self, tok: Token, parens: set[int]):
+    def __init__(self, tok: Token, parens: set[int], inclusive: bool):
         self.tok = tok
+        self.inclusive = inclusive
         self.number = NUMBER[tok.lower_]
         self.role = _role_name(tok.head if tok.dep_ == "poss" else tok)
         self.excluded = parens | _binding_excluded(tok)
@@ -178,17 +212,32 @@ class _Pronoun:
         if t.dep_ == "conj":
             return None  # counted with the first conjunct
         group = list(t.conjuncts)
-        return " and ".join(x.text for x in [t, *group]) if group else t.text if _number(t) == "pl" else None
+        if group:
+            return " and ".join(x.text for x in [t, *group])
+        return t.text if self._plural(t) else None
+
+    def _plural(self, t: Token) -> bool:
+        """Whether "they" can refer to ``t``: a plural, or one person for singular they."""
+        return _number(t) == "pl" or (self.inclusive and _person(t))
 
     def _eligible(self, t: Token) -> bool:
-        noun = t.pos_ in _NOUNS or bool(PLACEHOLDER.fullmatch(t.text))
+        noun = t.pos_ in _NOUNS or bool(PLACEHOLDER.fullmatch(t.text)) or (self.inclusive and _referring(t))
         return noun and t.i < self.tok.i and t.i not in self.excluded and t.dep_ not in ("compound", "appos") and not _contains(t, self.tok)
 
 
+def _referring(t: Token) -> bool:
+    """A pronoun that can stand before another: "it", "they", or "this", not "that" in "a function that"."""
+    if t.pos_ != "PRON" or _number(t) is None:
+        return False
+    return not (t.lower_ in RELATIVE and t.head.dep_ == "relcl")
+
+
 def _binding_excluded(tok: Token) -> set[int]:
-    """The pronoun's own phrase, and the subject of the verb it is an object of."""
+    """The pronoun's own phrase, the subject of the verb it is an object of,
+    and the noun modified by the relative clause it is an argument of."""
     own = {t.i for t in tok.head.subtree} if tok.dep_ == "poss" else set()
-    return own | _coargument_subject(tok)
+    relative = {tok.head.head.i} if tok.dep_ in _SUBJ | _OBJ and tok.head.dep_ == "relcl" else set()
+    return own | relative | _coargument_subject(tok)
 
 
 def _coargument_subject(tok: Token) -> set[int]:

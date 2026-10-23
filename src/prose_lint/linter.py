@@ -21,9 +21,10 @@ class Linter:
         self.cfg = cfg
         self.cache_dir = cache_dir
         self.context = {r.NAME: r.CONTEXT for r in (literal_verbs, ambiguous_pronouns, serial_comma)}
+        ratio = cfg.rule(ambiguous_pronouns.NAME).get("ratio", 0.95)
         checks = {
-            literal_verbs.NAME: lambda: partial(literal_verbs.check, lexicon=Lexicon(cfg.lexicon), verbs=VerbTable.load(cfg.verbs), allow=cfg.allow(literal_verbs.NAME)),
-            ambiguous_pronouns.NAME: lambda: partial(ambiguous_pronouns.check, ratio=cfg.rule(ambiguous_pronouns.NAME).get("ratio", 0.95)),
+            literal_verbs.NAME: lambda: partial(literal_verbs.check, lexicon=Lexicon(cfg.lexicon), verbs=VerbTable.load(cfg.verbs), allow=cfg.allow(literal_verbs.NAME), ratio=ratio),
+            ambiguous_pronouns.NAME: lambda: partial(ambiguous_pronouns.check, ratio=ratio),
             serial_comma.NAME: lambda: partial(serial_comma.check, allow=cfg.rule(serial_comma.NAME).get("allow", [])),
         }
         enabled = [r for r in RULES if cfg.severity(r) != "off" and (only is None or r in only)]
@@ -44,7 +45,7 @@ class Linter:
         tok = hit.token
         sent = tok.sent
         occurrence = sum(t.lower_ == tok.lower_ for t in sent if t.i <= tok.i)
-        context = _preceding(sent, self.context[rule])
+        context = _preceding(sent, self.context[rule] if hit.context is None else hit.context)
         severity = hit.severity or self.cfg.severity(rule)
         return Finding(path, seg.line, rule, severity, hit.message, seg.restore(sent.text), seg.restore(context), tok.text, occurrence, hit.data)
 

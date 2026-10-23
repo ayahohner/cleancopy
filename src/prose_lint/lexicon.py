@@ -72,6 +72,13 @@ def wordnet_class(lemma: str) -> str:
     return _inanimate_class(_roots(synsets[0]))
 
 
+@lru_cache(maxsize=None)
+def person(lemma: str) -> bool:
+    """Whether the noun's most frequent common sense names a person, not a group."""
+    synsets = _common_senses(wn.synsets(lemma.replace(" ", "_"), pos=wn.NOUN), lemma)
+    return bool(synsets) and "person.n.01" in _roots(synsets[0])
+
+
 def _common_senses(synsets: list, lemma: str) -> list:
     """The senses that do not name one individual, or all of them if none remain."""
     return [s for s in synsets if not _proper(s, lemma)] or synsets

@@ -37,3 +37,7 @@ def test_finding_carries_previous_sentence(lint):
     text = "The rule constrains the table. A table that violates it is refused before it takes effect."
     found = lint(text, RULE)
     assert found and all(f.context == "The rule constrains the table." for f in found)
+
+
+def test_relative_clause_arguments_skip_the_modified_noun(lint):
+    assert lint("Every record carries the version it was made under.", RULE) == []
