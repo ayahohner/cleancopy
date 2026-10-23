@@ -4,15 +4,12 @@ version = "0.1.0"
 description = "A linter for prose: checks that verbs fit their subjects and that pronouns have one antecedent."
 requires-python = ">=3.12,<3.13"
 dependencies = [
-    "en-core-web-trf",
+    "en-core-web-trf @ https://github.com/explosion/spacy-models/releases/download/en_core_web_trf-3.8.0/en_core_web_trf-3.8.0-py3-none-any.whl",
     "markdown-it-py>=4.2.0",
     "mdit-py-plugins>=0.6.1",
     "nltk>=3.9",
     "spacy>=3.8,<3.9",
 ]
-
-[tool.uv.sources]
-en-core-web-trf = { url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_trf-3.8.0/en_core_web_trf-3.8.0-py3-none-any.whl" }
 
 [dependency-groups]
 dev = [
@@ -33,3 +30,6 @@ packages = ["src/prose_lint"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 filterwarnings = ["ignore::FutureWarning:torch"]
+
+[tool.hatch.metadata]
+allow-direct-references = true  # the spaCy model is not on PyPI
