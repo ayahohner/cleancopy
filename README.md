@@ -34,6 +34,7 @@ include = ["src/content/posts/*.md"]
 [lexicon]                       # what kind of thing each noun names
 agent = ["AI agent", "model"]
 physical = ["server", "phone"]
+interface = ["presentation"]    # can move and show; see src/prose_lint/data/lexicon.toml
 mechanism = ["compiler", "runtime"]  # performs operations, cannot decide
 abstract = ["record", "theorem"]
 text = ["rule", "message"]      # can ask or say, not decide

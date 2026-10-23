@@ -5,6 +5,9 @@ Classes, from most to least capable:
 - ``agent``: can judge, intend, prefer, or tolerate: people, organizations,
   and AI agents or models.
 - ``physical``: a concrete object, such as a phone or a server.
+- ``interface``: an element of a screen or a page, such as a window, a
+  button, or a chart, which can move or show as a physical object can. The
+  built-in lexicon in ``data/lexicon.toml`` assigns this class.
 - ``mechanism``: software that performs operations, such as a compiler or a
   runtime, which can set, assign, or deliver but not decide. Only the project
   lexicon assigns this class.
@@ -17,8 +20,8 @@ Classes, from most to least capable:
 - ``unknown``: pronouns, unrecognized names, and words not in WordNet; never
   flagged.
 
-The project lexicon is consulted first, then named-entity labels, then
-WordNet. WordNet is used conservatively for animacy: a word with a person
+The project lexicon, over the built-in one, is consulted first, then
+named-entity labels, then WordNet. WordNet is used conservatively for animacy: a word with a person
 sense, such as "server" or "host", is never flagged unless the lexicon says
 otherwise. A proper-noun sense does not count, so "job" is not a person
 because of the biblical Job. Among physical, text, and abstract, the first (most frequent) sense
@@ -27,8 +30,10 @@ decides, so "goal" is abstract although one sense is a goalpost.
 
 from __future__ import annotations
 
+import tomllib
 from dataclasses import dataclass
 from functools import lru_cache
+from importlib import resources
 
 from nltk.corpus import wordnet as wn
 from spacy.tokens import Token
@@ -37,6 +42,7 @@ from .markdown import PLACEHOLDER
 
 AGENT = "agent"
 PHYSICAL = "physical"
+INTERFACE = "interface"
 MECHANISM = "mechanism"
 TEXT = "text"
 ABSTRACT = "abstract"
@@ -102,7 +108,8 @@ def _roots(synset) -> set[str]:
 
 class Lexicon:
     def __init__(self, entries: dict[str, list[str]]):
-        self.table = {w.lower(): cls for cls, words in entries.items() for w in words}
+        builtin = tomllib.loads(resources.files("prose_lint.data").joinpath("lexicon.toml").read_text())
+        self.table = {w.lower(): cls for table in (builtin, entries) for cls, words in table.items() for w in words}
 
     def classify(self, head: Token, placeholders: dict[str, str]) -> Subject:
         if PLACEHOLDER.fullmatch(head.text):

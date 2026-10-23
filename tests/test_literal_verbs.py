@@ -144,3 +144,32 @@ def test_pronoun_subjects_that_readers_resolve_elsewhere(lint, text):
 def test_pronoun_chains_reach_a_noun(lint):
     [finding] = lint("The seal closes a stratum, and it holds. It sits between strata.", RULE, lexicon=LEXICON)
     assert finding.data["subject"] == "seal"
+
+
+@pytest.mark.parametrize("text", [
+    "Discourse moved toward the question.",
+    "Discourse can show the pattern.",
+    "A price shows the difference.",
+])
+def test_abstractions_cannot_move_or_show(lint, text):
+    [finding] = lint(text, RULE)
+    assert finding.severity == "warning"
+
+
+@pytest.mark.parametrize("text", [
+    "The dialog moves to the corner.",
+    "The chart shows the total.",
+    "The server moves the file.",
+    "A person shows the record.",
+])
+def test_interface_elements_and_concrete_things_move_and_show(lint, text):
+    assert lint(text, RULE) == []
+
+
+def test_show_with_a_clause_is_info(lint):
+    [finding] = lint("The theorem shows that the order is fixed.", RULE, lexicon=LEXICON | {"abstract": ["theorem"]})
+    assert finding.severity == "info"
+
+
+def test_project_lexicon_overrides_the_builtin_one(lint):
+    assert len(lint("The view shows the total.", RULE, lexicon={"abstract": ["view"]})) == 1

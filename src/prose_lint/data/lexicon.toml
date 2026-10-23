@@ -1,0 +1,12 @@
+# Built-in lexicon entries. A project's prose-lint.toml overrides any word here.
+#
+# Interface elements: what a screen or a page shows, which can move or show
+# as a physical object can.
+interface = [
+  "UI", "user interface", "interface", "app", "browser", "terminal", "console", "editor",
+  "window", "dialog", "modal", "popup", "pop-up", "menu", "button", "toolbar", "sidebar",
+  "page", "screen", "view", "panel", "pane", "tab", "banner", "toast", "notification",
+  "tooltip", "cursor", "pointer", "icon", "badge", "widget", "slider", "checkbox", "canvas",
+  "chart", "graph", "plot", "diagram", "figure", "table", "map", "dashboard", "display",
+  "image", "picture", "screenshot", "animation", "illustration", "graphic", "slide",
+]

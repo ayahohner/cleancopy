@@ -1,8 +1,8 @@
 # Verbs and phrases whose literal sense restricts the subject.
 #
 # needs = "animate"  : a person, an organization, or an AI agent or model
-# needs = "concrete" : a physical object, a mechanism (software that performs
-#                      operations), or an agent
+# needs = "concrete" : a physical object, an interface element, a mechanism
+#                      (software that performs operations), or an agent
 # needs = "speaker"  : an agent, or a text that carries words, such as a message
 #                      or a rule ("the message asks", "the rules say")
 # severity = "info"  : a figure that reads as near-literal; worth fixing, not failing
@@ -87,6 +87,14 @@ suggest = ["lie", "be placed", "be"]
 needs = "concrete"
 [verb.walk]
 needs = "concrete"
+# Motion and display: a window moves and a chart shows a total, but discourse
+# does not move and a theorem does not show.
+[verb.move]
+needs = "concrete"
+suggest = ["change", "turn to (for a topic)", "is moved (passive)"]
+[verb.show]
+needs = "concrete"
+suggest = ["contain", "indicate", "is visible in"]
 [verb.fight]
 suggest = ["conflict with"]
 [verb.compete]
@@ -133,11 +141,19 @@ verb = "keep"
 object = "track"
 suggest = ["record", "store"]
 
+# "Research shows that" is the near-literal sense "demonstrate".
+[[phrase]]
+verb = "show"
+complement = true
+needs = "concrete"
+severity = "info"
+suggest = ["establish", "imply", "is evidence that"]
+
 
 # Left out on purpose: verbs with a literal sense for any subject in technical
 # prose, such as "the function returns a value":
-#   admit, accept, reject, show, use, run, read, write, send, receive, store,
-#   hold, contain, carry, move, follow, lead, require, need, give, take, get,
+#   admit, accept, reject, use, run, read, write, send, receive, store,
+#   hold, contain, carry, follow, lead, require, need, give, take, get,
 #   make, keep, put, place, find, start, stop, open, close, check, test, record,
 #   count, produce, replace, build, compute, evaluate, apply, return, pick,
 #   present, seal, bind, merge, translate, list, mark, state, label, derive,
