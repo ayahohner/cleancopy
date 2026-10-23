@@ -92,7 +92,9 @@ readings = ["undo", "reduce"]
 `<!-- prose-lint-disable literal-verbs -->` disables the named rules, or every
 rule when none is named, for the next paragraph, list, or table.
 
-Parses are cached in `.cache/prose-lint` next to the config file.
+Parses are cached in `$XDG_CACHE_HOME/prose-lint`, or `~/.cache/prose-lint`
+when `XDG_CACHE_HOME` is unset, never in the project. The cache is keyed by
+the model and the text, so projects share it; delete the folder to clear it.
 
 ## Options
 

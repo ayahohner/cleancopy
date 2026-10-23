@@ -7,6 +7,12 @@ from prose_lint.nlp import ensure_wordnet
 ensure_wordnet()
 
 
+@pytest.fixture(autouse=True)
+def cache_home(tmp_path, monkeypatch):
+    """Keep test parses out of the real user cache."""
+    monkeypatch.setenv("XDG_CACHE_HOME", str(tmp_path / "cache"))
+
+
 @pytest.fixture
 def lint():
     def run(text: str, name: str, **cfg):

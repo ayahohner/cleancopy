@@ -1,11 +1,12 @@
 """prose-lint: check Markdown prose for verbs that do not fit their subjects,
 pronouns with more than one likely antecedent, lists without a serial comma,
-and phrasal verbs with more than one reading."""
+phrasal verbs with more than one reading, and banned constructions."""
 
 from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 import warnings
 from pathlib import Path
@@ -26,11 +27,17 @@ def main(argv: list[str] | None = None) -> int:
     if not paths:
         sys.exit("prose-lint: no files given and no include globs in the config")
     ensure_wordnet()
-    cache = None if args.no_cache else cfg.root / ".cache" / "prose-lint"
+    cache = None if args.no_cache else cache_dir()
     linter = Linter(cfg, cache, args.rule)
     findings = [f for path in paths for f in linter.lint(path.read_text(), _shown(path))]
     _report(findings, args.format)
     return _status(findings, args.fail_on)
+
+
+def cache_dir() -> Path:
+    """$XDG_CACHE_HOME/prose-lint, or ~/.cache/prose-lint. Parses are keyed by
+    content, so every project can share one cache."""
+    return Path(os.environ.get("XDG_CACHE_HOME") or Path.home() / ".cache") / "prose-lint"
 
 
 def _status(findings: list[Finding], fail_on: str) -> int:

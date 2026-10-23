@@ -1,6 +1,6 @@
 import json
 
-from prose_lint.cli import main
+from prose_lint.cli import cache_dir, main
 
 CONFIG = 'include = ["*.md"]\n[lexicon]\nabstract = ["theorem"]\n[rules.ambiguous-pronouns]\nseverity = "off"\n'
 
@@ -28,9 +28,17 @@ def test_json_report_and_fail_on(tmp_path, monkeypatch, capsys):
 
 def test_cache_is_reused(tmp_path, monkeypatch, capsys):
     write(tmp_path, monkeypatch, "A person decides.\n")
+    monkeypatch.setenv("XDG_CACHE_HOME", str(tmp_path / "cache"))
     assert main([]) == 0
     assert main([]) == 0
-    assert list((tmp_path / ".cache" / "prose-lint").glob("*.spacy"))
+    assert list((tmp_path / "cache" / "prose-lint").glob("*.spacy"))
+    assert not (tmp_path / ".cache").exists()
+
+
+def test_cache_defaults_to_the_home_directory(monkeypatch, tmp_path):
+    monkeypatch.delenv("XDG_CACHE_HOME", raising=False)
+    monkeypatch.setenv("HOME", str(tmp_path))
+    assert cache_dir() == tmp_path / ".cache" / "prose-lint"
 
 
 def test_no_files(tmp_path, monkeypatch):
