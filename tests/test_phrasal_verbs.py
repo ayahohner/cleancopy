@@ -47,3 +47,7 @@ def test_project_entries_extend_the_table():
     entry = {"verb": "roll", "particle": "back", "readings": ["undo", "reduce"]}
     cfg = Config(phrasal=[entry])
     assert Linter(cfg, only={RULE}).lint("The team rolled back the price.", "test.md")
+
+
+def test_a_preposition_before_the_verb_does_not_complete_it(lint):
+    assert lint("From the start, the scandal drew attention.", RULE) == []

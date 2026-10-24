@@ -84,7 +84,7 @@ def settled(tok: Token) -> bool:
 def chained(tok: Token) -> bool:
     """ "hold them humbly enough to revise them" """
     r = role(tok)
-    return any(_referring(t) and number(t) == NUMBER[tok.lower_] and role(t) == r and not expletive(t) for t in tok.doc[window_start(tok) : tok.i])
+    return any(referring(t) and number(t) == NUMBER[tok.lower_] and role(t) == r and not expletive(t) for t in tok.doc[window_start(tok) : tok.i])
 
 
 def expletive(tok: Token) -> bool:
@@ -177,7 +177,7 @@ def _distributive(tok: Token) -> bool:
     return any(a.lower_ == "each" for a in tok.ancestors)
 
 
-def _referring(t: Token) -> bool:
+def referring(t: Token) -> bool:
     """A pronoun that can stand before another: "it", "they", or "this", not "that" in "a function that"."""
     if t.pos_ != "PRON" or number(t) is None:
         return False

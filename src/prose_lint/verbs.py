@@ -19,6 +19,8 @@ from importlib import resources
 
 from spacy.tokens import Token
 
+from .grammar import completions
+
 from .lexicon import (
     ABSTRACT, AGENT, DISPLAY, EVIDENCE, IDEA, INSTITUTION, MECHANISM, MIXED, PHYSICAL, TEXT, UNKNOWN,
 )
@@ -110,16 +112,11 @@ class VerbTable:
 
 def _phrase_words(verb: Token, phrase: dict) -> str | None:
     """The phrase as it matched, or None when a slot is empty."""
-    kids = _following(verb)
+    kids = completions(verb)
     words = [phrase["verb"], *_slot_words(kids, phrase)]
     if phrase.get("complement"):
         words.append(_filler(kids, _COMPLEMENTS, None) and "")
     return None if None in words else " ".join(w for w in words if w)
-
-
-def _following(verb: Token) -> list[Token]:
-    """The verb's children, less a preposition before it: "At that point, X looks like"."""
-    return [k for k in verb.children if k.dep_ not in ("prep", "prt") or k.i > verb.i]
 
 
 def _slot_words(kids: list[Token], phrase: dict) -> list[str | None]:

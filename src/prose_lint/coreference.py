@@ -45,7 +45,7 @@ from spacy.tokens import Span, Token
 
 from . import binding
 from .binding import NOUNS, NUMBER, OBJ, SUBJ, VERBS, WINDOW, number
-from .grammar import RELATIVE, subject_of
+from .grammar import subject_of
 from .lexicon import AGENT, Lexicon, only_person, person
 from .markdown import PLACEHOLDER
 
@@ -170,7 +170,7 @@ class _Pronoun:
         return listed in (None, AGENT) and t.pos_ == "NOUN" and only_person(t.lemma_.lower())
 
     def _eligible(self, t: Token) -> bool:
-        noun = t.pos_ in NOUNS or bool(PLACEHOLDER.fullmatch(t.text)) or (self.inclusive and _referring(t))
+        noun = t.pos_ in NOUNS or bool(PLACEHOLDER.fullmatch(t.text)) or (self.inclusive and binding.referring(t))
         return noun and t.i < self.tok.i and t.i not in self.excluded and not self._ruled_out(t)
 
     def _ruled_out(self, t: Token) -> bool:
@@ -178,13 +178,6 @@ class _Pronoun:
         if t.dep_ in ("compound", "appos") or _predicate(t):
             return True
         return (self.tok.lower_ in _IT and self._human(t)) or binding.contains(t, self.tok)
-
-
-def _referring(t: Token) -> bool:
-    """A pronoun that can stand before another: "it", "they", or "this", not "that" in "a function that"."""
-    if t.pos_ != "PRON" or number(t) is None:
-        return False
-    return not (t.lower_ in RELATIVE and t.head.dep_ == "relcl")
 
 
 def _joined(group: list[Token], disjunction: bool) -> str:

@@ -18,6 +18,7 @@ from importlib import resources
 from spacy.tokens import Doc, Token
 
 from ..findings import Hit
+from ..grammar import completions
 from ..markdown import Segment
 
 NAME = "phrasal-verbs"
@@ -46,7 +47,7 @@ def check(doc: Doc, seg: Segment, table: list[dict], allow: list[str]) -> Iterat
 
 def _match(verb: Token, table: list[dict]) -> tuple[dict, str | None] | None:
     lemma = verb.lemma_.lower()
-    kids = [k for k in verb.children if k.dep_ not in _PARTICLES or k.i > verb.i]
+    kids = completions(verb)
     obj = _object(kids)
     for entry in table:
         if entry["verb"] == lemma and _fits(entry, kids, obj):

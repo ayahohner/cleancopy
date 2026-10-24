@@ -75,7 +75,7 @@ def _not_but(tok: Token) -> bool:
     """ "not a library but a protocol"; "does not decide but records" """
     if not _negator(tok) or tok.dep_ == "preconj" or _additive(tok):
         return False
-    return _joined(tok.head, {"but"}) and any(k.dep_ == "conj" and not _has_subject(k) for k in tok.head.children)
+    return _joined(tok.head, {"but"}) and any(k.dep_ == "conj" and _subject(k) is None for k in tok.head.children)
 
 
 def _not_then_is(tok: Token) -> bool:
@@ -113,10 +113,6 @@ def _additive(tok: Token) -> bool:
 
 def _joined(head: Token, words: set[str]) -> bool:
     return any(k.dep_ == "cc" and k.lower_ in words for k in head.children)
-
-
-def _has_subject(verb: Token) -> bool:
-    return any(k.dep_ in ("nsubj", "nsubjpass", "expl") for k in verb.children)
 
 
 def _subject(verb: Token) -> Token | None:

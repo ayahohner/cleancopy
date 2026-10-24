@@ -7,6 +7,7 @@ from __future__ import annotations
 from spacy.tokens import Token
 
 RELATIVE = {"that", "which", "who", "whom", "whose"}
+_FRONTED = {"prt", "advmod", "prep"}  # attachments that complete a verb only after it
 _PASSIVE = {"nsubjpass", "csubjpass", "auxpass", "expl"}
 
 
@@ -25,6 +26,12 @@ def subject_of(verb: Token, depth: int = 0) -> Token | None:
     if subj is None:
         return _inherited(verb, depth)
     return verb.head if _relative(subj, verb) else subj
+
+
+def completions(verb: Token) -> list[Token]:
+    """The verb's children, less a particle or preposition before it: in "At
+    that point, X looks like Y", "at" does not complete "looks"."""
+    return [k for k in verb.children if k.dep_ not in _FRONTED or k.i > verb.i]
 
 
 def _object(preposition: Token) -> Token | None:
