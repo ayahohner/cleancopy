@@ -1,12 +1,12 @@
 import json
 
-from prose_lint.cli import cache_dir, main
+from cleancopy.cli import cache_dir, main
 
 CONFIG = 'include = ["*.md"]\n[lexicon]\nabstract = ["theorem"]\n[rules.ambiguous-pronouns]\nseverity = "off"\n'
 
 
 def write(tmp_path, monkeypatch, text):
-    (tmp_path / "prose-lint.toml").write_text(CONFIG)
+    (tmp_path / "cleancopy.toml").write_text(CONFIG)
     (tmp_path / "post.md").write_text(text)
     monkeypatch.chdir(tmp_path)
 
@@ -31,14 +31,14 @@ def test_cache_is_reused(tmp_path, monkeypatch, capsys):
     monkeypatch.setenv("XDG_CACHE_HOME", str(tmp_path / "cache"))
     assert main([]) == 0
     assert main([]) == 0
-    assert list((tmp_path / "cache" / "prose-lint").glob("*.spacy"))
+    assert list((tmp_path / "cache" / "cleancopy").glob("*.spacy"))
     assert not (tmp_path / ".cache").exists()
 
 
 def test_cache_defaults_to_the_home_directory(monkeypatch, tmp_path):
     monkeypatch.delenv("XDG_CACHE_HOME", raising=False)
     monkeypatch.setenv("HOME", str(tmp_path))
-    assert cache_dir() == tmp_path / ".cache" / "prose-lint"
+    assert cache_dir() == tmp_path / ".cache" / "cleancopy"
 
 
 def test_no_files(tmp_path, monkeypatch):

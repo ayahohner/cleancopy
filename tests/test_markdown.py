@@ -1,4 +1,4 @@
-from prose_lint.markdown import segments
+from cleancopy.markdown import segments
 
 
 def test_code_and_math_become_placeholders():

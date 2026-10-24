@@ -4,7 +4,7 @@ Code spans and inline math are replaced by placeholder words so that the
 parser sees a grammatical sentence; each placeholder remembers the text it
 replaced, so findings can quote the original.
 
-``<!-- prose-lint-disable literal-verbs -->`` disables the named rules, or
+``<!-- cleancopy-disable literal-verbs -->`` disables the named rules, or
 all rules when none is named, for the next block: a paragraph, list, or table.
 """
 
@@ -20,7 +20,7 @@ from mdit_py_plugins.front_matter import front_matter_plugin
 
 # A placeholder must be one token that the parser tags as a proper noun.
 PLACEHOLDER = re.compile(r"\bZq[a-z]+\b")
-DISABLE = re.compile(r"<!--\s*prose-lint-disable\b([^>]*?)-->")
+DISABLE = re.compile(r"<!--\s*cleancopy-disable\b([^>]*?)-->")
 _FIELD = re.compile(r"(?:title|description):\s*(.*)")
 _INLINE_CODE = {"code_inline": "`{}`", "math_inline": "${}$"}
 

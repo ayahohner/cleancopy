@@ -7,7 +7,7 @@ with the formulas of Inner Graph's scripts/metrics.ts.
 
 Fails when any function's CRAP exceeds 8 or any file's MI is 75 or below.
 
-    uv run pytest --cov=prose_lint --cov-report=json:.coverage.json
+    uv run pytest --cov=cleancopy --cov-report=json:.coverage.json
     uv run python scripts/metrics.py .coverage.json
 """
 
@@ -25,7 +25,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SOURCE = ROOT / "src" / "prose_lint"
+SOURCE = ROOT / "src" / "cleancopy"
 CRAP_LIMIT = 8
 MI_LIMIT = 75
 

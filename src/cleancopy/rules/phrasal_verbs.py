@@ -31,7 +31,7 @@ _OBJECTS = ("dobj", "obj")
 
 
 def load(extra: list[dict] | None = None) -> list[dict]:
-    data = tomllib.loads(resources.files("prose_lint.data").joinpath("phrasal.toml").read_text())
+    data = tomllib.loads(resources.files("cleancopy.data").joinpath("phrasal.toml").read_text())
     return data.get("phrasal", []) + (extra or [])
 
 

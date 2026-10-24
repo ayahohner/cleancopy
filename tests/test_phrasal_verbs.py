@@ -41,8 +41,8 @@ def test_allow_entry(lint):
 
 
 def test_project_entries_extend_the_table():
-    from prose_lint.config import Config
-    from prose_lint.linter import Linter
+    from cleancopy.config import Config
+    from cleancopy.linter import Linter
 
     entry = {"verb": "roll", "particle": "back", "readings": ["undo", "reduce"]}
     cfg = Config(phrasal=[entry])

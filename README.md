@@ -1,4 +1,6 @@
-# prose-lint
+# cleancopy
+
+Formerly prose-lint.
 
 A linter for Markdown prose. It parses each sentence with spaCy's transformer
 model and checks five rules:
@@ -25,18 +27,18 @@ model and checks five rules:
 
 ## Install
 
-prose-lint needs Python 3.12 and [uv](https://docs.astral.sh/uv/). Run it
+cleancopy needs Python 3.12 and [uv](https://docs.astral.sh/uv/). Run it
 without installing:
 
 ```sh
-uvx --from git+https://github.com/ayahohner/prose-lint@v0.3.0 prose-lint posts/*.md
+uvx --from git+https://github.com/ayahohner/cleancopy@v0.4.0 cleancopy posts/*.md
 ```
 
 The first run downloads the spaCy model (about 450 MB) and WordNet.
 
 ## Configure
 
-prose-lint reads the nearest `prose-lint.toml`, searching upward from the
+cleancopy reads the nearest `cleancopy.toml`, searching upward from the
 working directory. With no paths on the command line, it lints the files that
 `include` matches.
 
@@ -46,7 +48,7 @@ include = ["src/content/posts/*.md"]
 [lexicon]                       # what kind of thing each noun names
 agent = ["AI agent", "model"]
 physical = ["server", "phone"]
-display = ["presentation"]      # can move and show; see src/prose_lint/data/lexicon.toml
+display = ["presentation"]      # can move and show; see src/cleancopy/data/lexicon.toml
 evidence = ["benchmark"]        # can show, suggest, or confirm that
 idea = ["plan"]                 # can guide and assume
 institution = ["market"]        # can require and permit, not want or buy
@@ -80,26 +82,26 @@ pattern = [
   { LEFT_ID = "of", REL_OP = ">", RIGHT_ID = "day", RIGHT_ATTRS = { LOWER = "day" } },
 ]
 
-[verbs]                         # added to the built-in table in src/prose_lint/data/verbs.toml
+[verbs]                         # added to the built-in table in src/cleancopy/data/verbs.toml
 verb.offer = { suggest = ["provide"] }
 
-[[phrasal]]                     # added to the built-in table in src/prose_lint/data/phrasal.toml
+[[phrasal]]                     # added to the built-in table in src/cleancopy/data/phrasal.toml
 verb = "roll"
 particle = "back"
 readings = ["undo", "reduce"]
 ```
 
-`<!-- prose-lint-disable literal-verbs -->` disables the named rules, or every
+`<!-- cleancopy-disable literal-verbs -->` disables the named rules, or every
 rule when none is named, for the next paragraph, list, or table.
 
-Parses are cached in `$XDG_CACHE_HOME/prose-lint`, or `~/.cache/prose-lint`
+Parses are cached in `$XDG_CACHE_HOME/cleancopy`, or `~/.cache/cleancopy`
 when `XDG_CACHE_HOME` is unset, never in the project. The cache is keyed by
 the model and the text, so projects share it; delete the folder to clear it.
 
 ## Options
 
 ```text
-prose-lint [paths...] [--config PATH] [--rule NAME]... [--format text|json]
+cleancopy [paths...] [--config PATH] [--rule NAME]... [--format text|json]
            [--fail-on info|warning|error] [--no-cache]
 ```
 
@@ -107,7 +109,7 @@ prose-lint [paths...] [--config PATH] [--rule NAME]... [--format text|json]
 
 ```sh
 uv run pytest
-uv run pytest --cov=prose_lint --cov-report=json:.coverage.json
+uv run pytest --cov=cleancopy --cov-report=json:.coverage.json
 uv run python scripts/metrics.py .coverage.json
 ```
 

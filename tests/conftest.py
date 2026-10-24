@@ -1,8 +1,8 @@
 import pytest
 
-from prose_lint.config import Config
-from prose_lint.linter import Linter
-from prose_lint.nlp import ensure_wordnet
+from cleancopy.config import Config
+from cleancopy.linter import Linter
+from cleancopy.nlp import ensure_wordnet
 
 ensure_wordnet()
 

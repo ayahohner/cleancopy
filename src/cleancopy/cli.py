@@ -1,4 +1,4 @@
-"""prose-lint: check Markdown prose for verbs that do not fit their subjects,
+"""cleancopy: check Markdown prose for verbs that do not fit their subjects,
 pronouns with more than one likely antecedent, lists without a serial comma,
 phrasal verbs with more than one reading, and banned constructions."""
 
@@ -25,7 +25,7 @@ def main(argv: list[str] | None = None) -> int:
     cfg = config.load(args.config or config.find(Path.cwd()))
     paths = args.paths or cfg.files()
     if not paths:
-        sys.exit("prose-lint: no files given and no include globs in the config")
+        sys.exit("cleancopy: no files given and no include globs in the config")
     ensure_wordnet()
     cache = None if args.no_cache else cache_dir()
     linter = Linter(cfg, cache, args.rule)
@@ -35,9 +35,9 @@ def main(argv: list[str] | None = None) -> int:
 
 
 def cache_dir() -> Path:
-    """$XDG_CACHE_HOME/prose-lint, or ~/.cache/prose-lint. Parses are keyed by
+    """$XDG_CACHE_HOME/cleancopy, or ~/.cache/cleancopy. Parses are keyed by
     content, so every project can share one cache."""
-    return Path(os.environ.get("XDG_CACHE_HOME") or Path.home() / ".cache") / "prose-lint"
+    return Path(os.environ.get("XDG_CACHE_HOME") or Path.home() / ".cache") / "cleancopy"
 
 
 def _status(findings: list[Finding], fail_on: str) -> int:
@@ -45,7 +45,7 @@ def _status(findings: list[Finding], fail_on: str) -> int:
 
 
 def _arguments() -> argparse.ArgumentParser:
-    ap = argparse.ArgumentParser(prog="prose-lint", description=__doc__)
+    ap = argparse.ArgumentParser(prog="cleancopy", description=__doc__)
     ap.add_argument("paths", nargs="*", type=Path, help="Markdown files; defaults to the config's include globs")
     ap.add_argument("--config", type=Path, help=f"path to {config.NAME}; found by searching upward by default")
     ap.add_argument("--rule", action="append", choices=RULES, help="run only this rule (repeatable)")

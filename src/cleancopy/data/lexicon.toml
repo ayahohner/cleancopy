@@ -1,4 +1,4 @@
-# Built-in lexicon entries. A project's prose-lint.toml overrides any word here.
+# Built-in lexicon entries. A project's cleancopy.toml overrides any word here.
 #
 # Displays: what presents an image to the eye, which can move or show as a
 # physical object can. A billboard or a television is already physical.
