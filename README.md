@@ -231,3 +231,7 @@ with no findings:
 ```sh
 uv run cleancopy README.md
 ```
+
+## License
+
+MIT; see [LICENSE](LICENSE).

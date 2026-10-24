@@ -3,6 +3,8 @@ name = "cleancopy"
 version = "0.4.0"
 description = "Deterministic checks for English prose, aimed at the habits of LLM-written text."
 requires-python = ">=3.12,<3.13"
+license = "MIT"
+license-files = ["LICENSE"]
 dependencies = [
     "en-core-web-trf @ https://github.com/explosion/spacy-models/releases/download/en_core_web_trf-3.8.0/en_core_web_trf-3.8.0-py3-none-any.whl",
     "markdown-it-py>=4.2.0",
