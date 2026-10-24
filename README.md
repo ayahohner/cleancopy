@@ -216,21 +216,9 @@ The parser is a neural model, so it sometimes misreads a sentence. Each rule is
 written to miss a finding rather than raise a false one, and every rule has an
 allow list for the rest.
 
-## Develop
+## Contributing
 
-```sh
-uv run pytest
-uv run pytest --cov=cleancopy --cov-report=json:.coverage.json
-uv run python scripts/metrics.py .coverage.json
-```
-
-The metrics script fails when any function's CRAP score exceeds 8 or any
-file's maintainability index is 75 or below. This README passes cleancopy
-with no findings:
-
-```sh
-uv run cleancopy README.md
-```
+See [CONTRIBUTING.md](CONTRIBUTING.md) to set up, test, and add rules.
 
 ## License
 
