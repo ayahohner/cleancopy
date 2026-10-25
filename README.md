@@ -87,13 +87,13 @@ cleancopy needs Python 3.12 and [uv](https://docs.astral.sh/uv/). Run
 cleancopy without installing:
 
 ```sh
-uvx --from git+https://github.com/ayahohner/cleancopy@v0.4.0 cleancopy post.md
+uvx --from git+https://github.com/ayahohner/cleancopy@v0.4.1 cleancopy post.md
 ```
 
 or install the command:
 
 ```sh
-uv tool install git+https://github.com/ayahohner/cleancopy@v0.4.0
+uv tool install git+https://github.com/ayahohner/cleancopy@v0.4.1
 ```
 
 The first run downloads the spaCy transformer model (about 450 MB) and
