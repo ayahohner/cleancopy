@@ -23,7 +23,7 @@ from .nlp import ensure_wordnet  # noqa: E402
 def main(argv: list[str] | None = None) -> int:
     args = _arguments().parse_args(argv)
     cfg = config.load(args.config or config.find(Path.cwd()))
-    paths = args.paths or cfg.files()
+    paths = _markdown(args.paths) or cfg.files()
     if not paths:
         sys.exit("cleancopy: no files given and no include globs in the config")
     ensure_wordnet()
@@ -40,13 +40,18 @@ def cache_dir() -> Path:
     return Path(os.environ.get("XDG_CACHE_HOME") or Path.home() / ".cache") / "cleancopy"
 
 
+def _markdown(paths: list[Path]) -> list[Path]:
+    """The given files, with each folder replaced by the Markdown files under it."""
+    return [f for p in paths for f in (sorted(p.rglob("*.md")) if p.is_dir() else [p])]
+
+
 def _status(findings: list[Finding], fail_on: str) -> int:
     return int(any(SEVERITIES.index(f.severity) >= SEVERITIES.index(fail_on) for f in findings))
 
 
 def _arguments() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser(prog="cleancopy", description=__doc__)
-    ap.add_argument("paths", nargs="*", type=Path, help="Markdown files; defaults to the config's include globs")
+    ap.add_argument("paths", nargs="*", type=Path, help="Markdown files or folders; defaults to the config's include globs")
     ap.add_argument("--config", type=Path, help=f"path to {config.NAME}; found by searching upward by default")
     ap.add_argument("--rule", action="append", choices=RULES, help="run only this rule (repeatable)")
     ap.add_argument("--format", choices=("text", "json"), default="text")

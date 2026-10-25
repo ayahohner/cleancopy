@@ -26,6 +26,15 @@ def test_json_report_and_fail_on(tmp_path, monkeypatch, capsys):
     assert finding["data"]["phrase"] == "draw line"
 
 
+def test_folder_means_its_markdown_files(tmp_path, monkeypatch, capsys):
+    write(tmp_path, monkeypatch, "A person decides.\n")
+    (tmp_path / "docs" / "notes").mkdir(parents=True)
+    (tmp_path / "docs" / "notes" / "draft.md").write_text("The theorem draws the line.\n")
+    (tmp_path / "docs" / "data.txt").write_text("The theorem draws the line.\n")
+    assert main(["--no-cache", "docs"]) == 1
+    assert capsys.readouterr().out.startswith("docs/notes/draft.md:1:")
+
+
 def test_cache_is_reused(tmp_path, monkeypatch, capsys):
     write(tmp_path, monkeypatch, "A person decides.\n")
     monkeypatch.setenv("XDG_CACHE_HOME", str(tmp_path / "cache"))

@@ -107,6 +107,7 @@ cleancopy [paths...] [--config PATH] [--rule NAME]... [--format text|json]
           [--fail-on info|warning|error] [--no-cache]
 ```
 
+- A folder stands for every Markdown file under it.
 - With no paths, cleancopy lints the files that the config's `include`
   globs match.
 - `--rule` runs only the named rule; repeat it for several.
