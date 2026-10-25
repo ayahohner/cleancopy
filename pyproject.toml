@@ -10,6 +10,7 @@ dependencies = [
     "markdown-it-py>=4.2.0",
     "mdit-py-plugins>=0.6.1",
     "nltk>=3.9",
+    "preshed>=3.0.13,<3.0.14",  # 3.0.14 breaks spaCy's tokenizer; uvx ignores uv.lock
     "spacy>=3.8,<3.9",
 ]
 
