@@ -1,6 +1,6 @@
 [project]
 name = "cleancopy"
-version = "0.4.1"
+version = "0.5.0"
 description = "Deterministic checks for English prose, aimed at the habits of LLM-written text."
 requires-python = ">=3.12,<3.13"
 readme = "README.md"

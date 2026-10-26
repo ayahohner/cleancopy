@@ -83,22 +83,27 @@ You can ban your own constructions with spaCy
 
 ## Install
 
-cleancopy needs Python 3.12 and [uv](https://docs.astral.sh/uv/). Run
-cleancopy without installing:
+cleancopy needs Python 3.12. With [uv](https://docs.astral.sh/uv/), run it
+without installing:
 
 ```sh
-uvx --from git+https://github.com/ayahohner/cleancopy@v0.4.1 cleancopy post.md
+uvx cleancopy post.md
 ```
 
-or install the command:
+or install the command with `uv tool install cleancopy`, `pipx install
+cleancopy`, or `pip install cleancopy`. In a JavaScript project, the npm
+package runs the same release through uv, so uv must be installed:
 
 ```sh
-uv tool install git+https://github.com/ayahohner/cleancopy@v0.4.1
+npx @innerlattice/cleancopy post.md
 ```
 
-The first run downloads the spaCy transformer model (about 450 MB) and
-WordNet. Parsing takes a few seconds per file, and parses are cached, so
-unchanged files are not parsed again.
+To pin a version, write `uvx cleancopy@0.5.0`, or add
+`@innerlattice/cleancopy@0.5.0` to your dev dependencies.
+
+The first run downloads the spaCy transformer model (about 450 MB) into the
+cache folder, and WordNet. Parsing takes a few seconds per file, and parses
+are cached, so unchanged files are not parsed again.
 
 ## Use
 
@@ -198,7 +203,7 @@ particle = "back"
 readings = ["undo", "reduce"]
 ```
 
-Parses are cached in `$XDG_CACHE_HOME/cleancopy`, or `~/.cache/cleancopy`
+The model and parses are cached in `$XDG_CACHE_HOME/cleancopy`, or `~/.cache/cleancopy`
 when `XDG_CACHE_HOME` is unset, and never in your project. The cache is keyed
 by the model and the text, so projects share it; delete the folder to clear
 it.
