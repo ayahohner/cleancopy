@@ -60,6 +60,20 @@ you commit:
 uv run cleancopy README.md CONTRIBUTING.md
 ```
 
+## Release
+
+A version lives in `pyproject.toml` and `npm/package.json`; set both, commit,
+and push a tag:
+
+```sh
+git tag v0.5.0
+git push origin v0.5.0
+```
+
+The tag runs `.github/workflows/publish.yml`, which tests and publishes the
+Python package to PyPI and then the npm package, which runs that PyPI release
+through uv.
+
 ## License
 
 Contributions are licensed under the [MIT License](LICENSE), the same as the

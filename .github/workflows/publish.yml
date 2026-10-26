@@ -1,0 +1,39 @@
+# Publishes a v* tag to PyPI, then the npm launcher, with trusted publishing:
+# PyPI and npm accept this workflow's OIDC token, so no token is stored.
+name: Publish
+on:
+  push:
+    tags: ["v*"]
+permissions: {}
+jobs:
+  pypi:
+    runs-on: ubuntu-24.04
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+      - name: Check that the tag matches both versions
+        run: |
+          v="${GITHUB_REF_NAME#v}"
+          grep -qx "version = \"$v\"" pyproject.toml
+          test "$(jq -r .version npm/package.json)" = "$v"
+      - run: uv run pytest -q
+      - run: uv build
+      - run: uv publish
+  npm:
+    needs: pypi
+    runs-on: ubuntu-24.04
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+      - run: npm publish
+        working-directory: npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }} # only for the first release, before npm trusts this workflow

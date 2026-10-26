@@ -1,0 +1,19 @@
+{
+  "name": "@innerlattice/cleancopy",
+  "version": "0.5.0",
+  "description": "Deterministic checks for English prose, aimed at the habits of LLM-written text.",
+  "keywords": ["prose", "linter", "markdown", "writing", "llm"],
+  "homepage": "https://github.com/ayahohner/cleancopy",
+  "bugs": "https://github.com/ayahohner/cleancopy/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ayahohner/cleancopy.git",
+    "directory": "npm"
+  },
+  "license": "MIT",
+  "author": "Aya Hohner <aya@innerlattice.com>",
+  "bin": { "cleancopy": "bin/cleancopy.js" },
+  "files": ["bin"],
+  "engines": { "node": ">=18" },
+  "publishConfig": { "access": "public" }
+}
