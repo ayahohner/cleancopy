@@ -3,22 +3,37 @@ name = "cleancopy"
 version = "0.4.1"
 description = "Deterministic checks for English prose, aimed at the habits of LLM-written text."
 requires-python = ">=3.12,<3.13"
+readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
+authors = [{ name = "Aya Hohner", email = "aya@innerlattice.com" }]
+keywords = ["prose", "linter", "markdown", "writing", "spacy", "llm"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Text Processing :: Linguistic",
+]
 dependencies = [
-    "en-core-web-trf @ https://github.com/explosion/spacy-models/releases/download/en_core_web_trf-3.8.0/en_core_web_trf-3.8.0-py3-none-any.whl",
     "markdown-it-py>=4.2.0",
     "mdit-py-plugins>=0.6.1",
     "nltk>=3.9",
     "preshed>=3.0.13,<3.0.14",  # 3.0.14 breaks spaCy's tokenizer; uvx ignores uv.lock
     "spacy>=3.8,<3.9",
+    "spacy-curated-transformers>=0.2.2,<1.0.0",  # what en_core_web_trf 3.8.0 needs; the model downloads on first use
 ]
 
 [dependency-groups]
 dev = [
+    "en-core-web-trf @ https://github.com/explosion/spacy-models/releases/download/en_core_web_trf-3.8.0/en_core_web_trf-3.8.0-py3-none-any.whl",
     "pytest>=9.1.1",
     "pytest-cov>=7.1.0",
 ]
+
+[project.urls]
+Homepage = "https://github.com/ayahohner/cleancopy"
+Issues = "https://github.com/ayahohner/cleancopy/issues"
 
 [project.scripts]
 cleancopy = "cleancopy.cli:main"
@@ -33,6 +48,3 @@ packages = ["src/cleancopy"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 filterwarnings = ["ignore::FutureWarning:torch"]
-
-[tool.hatch.metadata]
-allow-direct-references = true  # the spaCy model is not on PyPI

@@ -6,7 +6,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import sys
 import warnings
 from pathlib import Path
@@ -17,7 +16,7 @@ warnings.filterwarnings("ignore", category=FutureWarning, module="torch")
 from . import config  # noqa: E402
 from .findings import SEVERITIES, Finding  # noqa: E402
 from .linter import RULES, Linter  # noqa: E402
-from .nlp import ensure_wordnet  # noqa: E402
+from .nlp import cache_dir, ensure_wordnet  # noqa: E402
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -32,12 +31,6 @@ def main(argv: list[str] | None = None) -> int:
     findings = [f for path in paths for f in linter.lint(path.read_text(), _shown(path))]
     _report(findings, args.format)
     return _status(findings, args.fail_on)
-
-
-def cache_dir() -> Path:
-    """$XDG_CACHE_HOME/cleancopy, or ~/.cache/cleancopy. Parses are keyed by
-    content, so every project can share one cache."""
-    return Path(os.environ.get("XDG_CACHE_HOME") or Path.home() / ".cache") / "cleancopy"
 
 
 def _markdown(paths: list[Path]) -> list[Path]:

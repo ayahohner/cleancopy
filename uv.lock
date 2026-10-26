@@ -115,32 +115,34 @@ name = "cleancopy"
 version = "0.4.1"
 source = { editable = "." }
 dependencies = [
-    { name = "en-core-web-trf" },
     { name = "markdown-it-py" },
     { name = "mdit-py-plugins" },
     { name = "nltk" },
     { name = "preshed" },
     { name = "spacy" },
+    { name = "spacy-curated-transformers" },
 ]
 
 [package.dev-dependencies]
 dev = [
+    { name = "en-core-web-trf" },
     { name = "pytest" },
     { name = "pytest-cov" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "en-core-web-trf", url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_trf-3.8.0/en_core_web_trf-3.8.0-py3-none-any.whl" },
     { name = "markdown-it-py", specifier = ">=4.2.0" },
     { name = "mdit-py-plugins", specifier = ">=0.6.1" },
     { name = "nltk", specifier = ">=3.9" },
     { name = "preshed", specifier = ">=3.0.13,<3.0.14" },
     { name = "spacy", specifier = ">=3.8,<3.9" },
+    { name = "spacy-curated-transformers", specifier = ">=0.2.2,<1.0.0" },
 ]
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "en-core-web-trf", url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_trf-3.8.0/en_core_web_trf-3.8.0-py3-none-any.whl" },
     { name = "pytest", specifier = ">=9.1.1" },
     { name = "pytest-cov", specifier = ">=7.1.0" },
 ]
