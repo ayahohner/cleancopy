@@ -3,7 +3,7 @@ import zipfile
 
 import pytest
 
-from cleancopy.nlp import MODEL, MODEL_VERSION, model_path
+from proseclean.nlp import MODEL, MODEL_VERSION, model_path
 
 DATA = f"{MODEL}/{MODEL}-{MODEL_VERSION}/config.cfg"
 

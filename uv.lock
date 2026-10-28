@@ -111,43 +111,6 @@ wheels = [
 ]
 
 [[package]]
-name = "cleancopy"
-version = "0.5.0"
-source = { editable = "." }
-dependencies = [
-    { name = "markdown-it-py" },
-    { name = "mdit-py-plugins" },
-    { name = "nltk" },
-    { name = "preshed" },
-    { name = "spacy" },
-    { name = "spacy-curated-transformers" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "en-core-web-trf" },
-    { name = "pytest" },
-    { name = "pytest-cov" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "markdown-it-py", specifier = ">=4.2.0" },
-    { name = "mdit-py-plugins", specifier = ">=0.6.1" },
-    { name = "nltk", specifier = ">=3.9" },
-    { name = "preshed", specifier = ">=3.0.13,<3.0.14" },
-    { name = "spacy", specifier = ">=3.8,<3.9" },
-    { name = "spacy-curated-transformers", specifier = ">=0.2.2,<1.0.0" },
-]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "en-core-web-trf", url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_trf-3.8.0/en_core_web_trf-3.8.0-py3-none-any.whl" },
-    { name = "pytest", specifier = ">=9.1.1" },
-    { name = "pytest-cov", specifier = ">=7.1.0" },
-]
-
-[[package]]
 name = "click"
 version = "8.5.0"
 source = { registry = "https://pypi.org/simple" }
@@ -766,6 +729,43 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/e6/88/bdb244e40284ded3632a9f88c23bc80230bd7b2ae4a8b7f2cc91adead7a8/preshed-3.0.13-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:2e77bed56aded7cbe5d28d6bd2178bc5b13eda0e0e464dab205fb578fa915000", size = 1919236, upload-time = "2026-03-23T08:56:42.616Z" },
     { url = "https://files.pythonhosted.org/packages/a0/c9/c91ea56342e6c364fc69b444a1ac5432327857199c44032c9cc9dc4c3a23/preshed-3.0.13-cp312-cp312-win_amd64.whl", hash = "sha256:04d8f13f2986e5d11af5ac51f55ce3106c70c41b483d20ea392e6180bdd0f870", size = 122938, upload-time = "2026-03-23T08:56:44.271Z" },
     { url = "https://files.pythonhosted.org/packages/b2/0b/6a99d99619fd83b14c696e2489caed7070647488d4d3ac0b723d35db2de0/preshed-3.0.13-cp312-cp312-win_arm64.whl", hash = "sha256:19318dc1cd8cac6663c6c830bf7e0002d2de853769fb03e056774e97c21bedfd", size = 109194, upload-time = "2026-03-23T08:56:45.346Z" },
+]
+
+[[package]]
+name = "proseclean"
+version = "0.5.0"
+source = { editable = "." }
+dependencies = [
+    { name = "markdown-it-py" },
+    { name = "mdit-py-plugins" },
+    { name = "nltk" },
+    { name = "preshed" },
+    { name = "spacy" },
+    { name = "spacy-curated-transformers" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "en-core-web-trf" },
+    { name = "pytest" },
+    { name = "pytest-cov" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "markdown-it-py", specifier = ">=4.2.0" },
+    { name = "mdit-py-plugins", specifier = ">=0.6.1" },
+    { name = "nltk", specifier = ">=3.9" },
+    { name = "preshed", specifier = ">=3.0.13,<3.0.14" },
+    { name = "spacy", specifier = ">=3.8,<3.9" },
+    { name = "spacy-curated-transformers", specifier = ">=0.2.2,<1.0.0" },
+]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "en-core-web-trf", url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_trf-3.8.0/en_core_web_trf-3.8.0-py3-none-any.whl" },
+    { name = "pytest", specifier = ">=9.1.1" },
+    { name = "pytest-cov", specifier = ">=7.1.0" },
 ]
 
 [[package]]

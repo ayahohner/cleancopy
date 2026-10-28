@@ -39,7 +39,7 @@ def test_allow_entry(lint):
 
 
 def test_disable_comment(lint):
-    text = "<!-- cleancopy-disable literal-verbs -->\nThe theorem draws the line.\n\nThe theorem draws the line.\n"
+    text = "<!-- proseclean-disable literal-verbs -->\nThe theorem draws the line.\n\nThe theorem draws the line.\n"
     found = lint(text, RULE, lexicon=LEXICON)
     assert [f.line for f in found] == [4]
 
@@ -143,7 +143,7 @@ def test_borderline_exchange_verbs_are_info(lint):
 
 
 def test_proper_noun_senses_do_not_make_a_word_animate():
-    from cleancopy.lexicon import ABSTRACT, wordnet_class
+    from proseclean.lexicon import ABSTRACT, wordnet_class
 
     assert wordnet_class("job") == ABSTRACT
 

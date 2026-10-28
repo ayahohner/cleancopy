@@ -1,7 +1,7 @@
 import pytest
 
-from cleancopy.config import Config
-from cleancopy.linter import Linter
+from proseclean.config import Config
+from proseclean.linter import Linter
 
 RULE = "constructions"
 

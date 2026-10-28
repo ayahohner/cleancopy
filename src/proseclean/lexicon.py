@@ -141,7 +141,7 @@ def _roots(synset) -> set[str]:
 
 class Lexicon:
     def __init__(self, entries: dict[str, list[str]]):
-        builtin = tomllib.loads(resources.files("cleancopy.data").joinpath("lexicon.toml").read_text())
+        builtin = tomllib.loads(resources.files("proseclean.data").joinpath("lexicon.toml").read_text())
         self.table = {w.lower(): _ALIASES.get(cls, cls) for table in (builtin, entries) for cls, words in table.items() for w in words}
 
     def classify(self, head: Token, placeholders: dict[str, str]) -> Subject:

@@ -6,7 +6,7 @@ Editing one paragraph re-parses the file; leaving the file unchanged reuses
 the cache.
 
 PyPI does not accept a dependency on a URL, and spaCy publishes its models
-only as wheels on GitHub, so an installed cleancopy downloads the model into
+only as wheels on GitHub, so an installed proseclean downloads the model into
 the user cache on first use. A development install has it as a package.
 """
 
@@ -36,9 +36,9 @@ MODEL_SHA256 = "272a31e9d8530d1e075351d30a462d7e80e31da23574f1b274e200f3fff35bf5
 
 
 def cache_dir() -> Path:
-    """$XDG_CACHE_HOME/cleancopy, or ~/.cache/cleancopy. Parses are keyed by
+    """$XDG_CACHE_HOME/proseclean, or ~/.cache/proseclean. Parses are keyed by
     content, so every project can share one cache."""
-    return Path(os.environ.get("XDG_CACHE_HOME") or Path.home() / ".cache") / "cleancopy"
+    return Path(os.environ.get("XDG_CACHE_HOME") or Path.home() / ".cache") / "proseclean"
 
 
 def ensure_wordnet() -> None:
@@ -60,7 +60,7 @@ def model_path(root: Path, url: str = MODEL_URL, sha256: str = MODEL_SHA256) -> 
     """The model's data folder under ``root``, downloaded and unpacked on first use."""
     unpacked = root / f"{MODEL}-{MODEL_VERSION}"
     if not unpacked.exists():
-        print(f"cleancopy: downloading {MODEL} {MODEL_VERSION} (about 450 MB) once", file=sys.stderr)
+        print(f"proseclean: downloading {MODEL} {MODEL_VERSION} (about 450 MB) once", file=sys.stderr)
         _unpack(url, sha256, unpacked)
     return unpacked / MODEL / f"{MODEL}-{MODEL_VERSION}"
 
@@ -77,7 +77,7 @@ def _unpack(url: str, sha256: str, dest: Path) -> None:
                 digest.update(chunk)
                 out.write(chunk)
         if digest.hexdigest() != sha256:
-            sys.exit(f"cleancopy: the download of {url} does not match its expected hash")
+            sys.exit(f"proseclean: the download of {url} does not match its expected hash")
         with zipfile.ZipFile(wheel) as z:
             z.extractall(Path(tmp) / "unpacked")
         (Path(tmp) / "unpacked").rename(dest)

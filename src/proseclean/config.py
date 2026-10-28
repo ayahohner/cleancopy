@@ -1,4 +1,4 @@
-"""Project configuration, read from the nearest ``cleancopy.toml``.
+"""Project configuration, read from the nearest ``proseclean.toml``.
 
 ```toml
 include = ["src/content/posts/*.md"]
@@ -56,7 +56,7 @@ import tomllib
 from dataclasses import dataclass, field
 from pathlib import Path
 
-NAME = "cleancopy.toml"
+NAME = "proseclean.toml"
 
 
 @dataclass

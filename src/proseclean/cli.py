@@ -1,4 +1,4 @@
-"""cleancopy: check Markdown prose for verbs that do not fit their subjects,
+"""proseclean: check Markdown prose for verbs that do not fit their subjects,
 pronouns with more than one likely antecedent, lists without a serial comma,
 phrasal verbs with more than one reading, and banned constructions."""
 
@@ -24,7 +24,7 @@ def main(argv: list[str] | None = None) -> int:
     cfg = config.load(args.config or config.find(Path.cwd()))
     paths = _markdown(args.paths) or cfg.files()
     if not paths:
-        sys.exit("cleancopy: no files given and no include globs in the config")
+        sys.exit("proseclean: no files given and no include globs in the config")
     ensure_wordnet()
     cache = None if args.no_cache else cache_dir()
     linter = Linter(cfg, cache, args.rule)
@@ -43,7 +43,7 @@ def _status(findings: list[Finding], fail_on: str) -> int:
 
 
 def _arguments() -> argparse.ArgumentParser:
-    ap = argparse.ArgumentParser(prog="cleancopy", description=__doc__)
+    ap = argparse.ArgumentParser(prog="proseclean", description=__doc__)
     ap.add_argument("paths", nargs="*", type=Path, help="Markdown files or folders; defaults to the config's include globs")
     ap.add_argument("--config", type=Path, help=f"path to {config.NAME}; found by searching upward by default")
     ap.add_argument("--rule", action="append", choices=RULES, help="run only this rule (repeatable)")

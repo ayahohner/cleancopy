@@ -1,5 +1,5 @@
 [project]
-name = "cleancopy"
+name = "proseclean"
 version = "0.5.0"
 description = "Deterministic checks for English prose, aimed at the habits of LLM-written text."
 requires-python = ">=3.12,<3.13"
@@ -32,18 +32,18 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/ayahohner/cleancopy"
-Issues = "https://github.com/ayahohner/cleancopy/issues"
+Homepage = "https://github.com/ayahohner/proseclean"
+Issues = "https://github.com/ayahohner/proseclean/issues"
 
 [project.scripts]
-cleancopy = "cleancopy.cli:main"
+proseclean = "proseclean.cli:main"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/cleancopy"]
+packages = ["src/proseclean"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

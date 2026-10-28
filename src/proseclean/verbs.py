@@ -91,7 +91,7 @@ class VerbTable:
 
     @classmethod
     def load(cls, extra: dict | None = None) -> VerbTable:
-        data = tomllib.loads(resources.files("cleancopy.data").joinpath("verbs.toml").read_text())
+        data = tomllib.loads(resources.files("proseclean.data").joinpath("verbs.toml").read_text())
         extra = extra or {}
         return cls({**data.get("verb", {}), **extra.get("verb", {})}, data.get("phrase", []) + extra.get("phrase", []))
 

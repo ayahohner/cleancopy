@@ -1,8 +1,8 @@
 import pytest
 
-from cleancopy.config import Config
-from cleancopy.linter import Linter
-from cleancopy.nlp import ensure_wordnet
+from proseclean.config import Config
+from proseclean.linter import Linter
+from proseclean.nlp import ensure_wordnet
 
 ensure_wordnet()
 

@@ -1,15 +1,15 @@
-# cleancopy
+# proseclean
 
 Deterministic checks for English prose, aimed at the habits of
 LLM-written text.
 
-cleancopy parses every sentence of a Markdown file into a dependency tree
+proseclean parses every sentence of a Markdown file into a dependency tree
 (which word modifies which) and checks the tree against rules, the way a code
 linter checks a syntax tree. The same text always gets the same findings, and
 each finding names the rule, the words, and a rewrite.
 
 ```console
-$ cleancopy post.md
+$ proseclean post.md
 post.md:3: warning [literal-verbs] "draw line" takes a person, an organization, or an AI agent as its subject, but "theorem" is a text; literal options: separate, state the boundary between
     The theorem draws the line between safe and unsafe writes.
 post.md:5: warning [ambiguous-pronouns] "it" could refer to 'rule' or 'team'; name the noun
@@ -24,17 +24,17 @@ post.md:11: warning [phrasal-verbs] "draw attention from" reads as 'draw attenti
 
 ## Why
 
-<!-- cleancopy-disable constructions -->
+<!-- proseclean-disable constructions -->
 Language models write fluent prose with recurring tells: figurative verbs
 given to things that cannot act, pronouns with two plausible antecedents, and
 stock constructions such as "It's not X, it's Y". Each new model produces
-fewer of them, and the ones that remain are harder to spot by eye. cleancopy
+fewer of them, and the ones that remain are harder to spot by eye. proseclean
 finds them mechanically, so a writer, an editor, or an agent revising a draft
 can fix them before review, and you decide how your text reads.
 
 ## Rules
 
-<!-- cleancopy-disable -->
+<!-- proseclean-disable -->
 | Rule | Flags | Passes |
 |---|---|---|
 | `literal-verbs` | "The theorem draws the line", "A function tolerates delays", "Money buys access" | "An AI agent tolerates delays", "The study suggests that", "The server confirms the move" |
@@ -55,14 +55,14 @@ class of "people". Words that name both people and mechanisms, such as
 **ambiguous-pronouns.** "it", "its", "they", "them", and "their" are flagged
 when the two likeliest antecedents score nearly the same. Candidates are
 ranked by grammatical role and recency (Lappin and Leass, 1994). Before
-ranking, cleancopy excludes the candidates that grammar forbids: "it" does not name a person, "the cost of applying it" does
+ranking, proseclean excludes the candidates that grammar forbids: "it" does not name a person, "the cost of applying it" does
 not refer to the cost, "make it easier to" refers to nothing, and the verb
 must fit (only an agent can decide). A chain of pronouns is judged once.
 
 **serial-comma.** A list of three or more items needs a comma before its last
 "and" or "or". Pairs inside a list and appositions are not lists.
 
-<!-- cleancopy-disable phrasal-verbs -->
+<!-- proseclean-disable phrasal-verbs -->
 **phrasal-verbs.** A phrasal verb with two live readings is flagged with each
 reading as a rewrite. The table holds 28 entries, such as "turn on", "put
 off", and "make up".
@@ -70,7 +70,7 @@ off", and "make up".
 **constructions.** Sentence shapes, matched in the tree, so different wordings
 of one construction are caught together:
 
-<!-- cleancopy-disable -->
+<!-- proseclean-disable -->
 - `comma-not`: "X, not Y"
 - `not-but`: "not X but Y", though not "not only X but also Y"
 - `not-then-is`: a denial corrected by the next clause with the same verb, as
@@ -83,23 +83,23 @@ You can ban your own constructions with spaCy
 
 ## Install
 
-cleancopy needs Python 3.12. With [uv](https://docs.astral.sh/uv/), run it
+proseclean needs Python 3.12. With [uv](https://docs.astral.sh/uv/), run it
 without installing:
 
 ```sh
-uvx cleancopy post.md
+uvx proseclean post.md
 ```
 
-or install the command with `uv tool install cleancopy`, `pipx install
-cleancopy`, or `pip install cleancopy`. In a JavaScript project, the npm
-package runs the same release through uv, so uv must be installed:
+or install the command with `uv tool install proseclean`, `pipx
+install proseclean`, or `pip install proseclean`. In a JavaScript project, the
+npm package runs the same release through uv, so uv must be installed:
 
 ```sh
-npx @innerlattice/cleancopy post.md
+npx @innerlattice/proseclean post.md
 ```
 
-To pin a version, write `uvx cleancopy@0.5.0`, or add
-`@innerlattice/cleancopy@0.5.0` to your dev dependencies.
+To pin a version, write `uvx proseclean@0.5.0`, or add
+`@innerlattice/proseclean@0.5.0` to your dev dependencies.
 
 The first run downloads the spaCy transformer model (about 450 MB) into the
 cache folder, and WordNet. Parsing takes a few seconds per file, and parses
@@ -108,30 +108,30 @@ are cached, so unchanged files are not parsed again.
 ## Use
 
 ```text
-cleancopy [paths...] [--config PATH] [--rule NAME]... [--format text|json]
+proseclean [paths...] [--config PATH] [--rule NAME]... [--format text|json]
           [--fail-on info|warning|error] [--no-cache]
 ```
 
 - A folder stands for every Markdown file under it.
-- With no paths, cleancopy lints the files that the config's `include`
+- With no paths, proseclean lints the files that the config's `include`
   globs match.
 - `--rule` runs only the named rule; repeat it for several.
 - `--format json` prints a list of findings with `path`, `line`, `rule`,
   `severity`, `message`, `excerpt`, `word`, and rule-specific `data`.
 - The exit status is 1 when any finding is at or above `--fail-on`
-  (default `warning`), so cleancopy can gate CI or a pre-commit hook.
+  (default `warning`), so proseclean can gate CI or a pre-commit hook.
 
 To turn rules off for the next paragraph, list, or table, put a comment
 before it. With no rule named, every rule is off.
 
 ```markdown
-<!-- cleancopy-disable literal-verbs constructions -->
+<!-- proseclean-disable literal-verbs constructions -->
 The market decides, not the committee.
 ```
 
 ## Configure
 
-cleancopy reads the nearest `cleancopy.toml`, searching upward from the
+proseclean reads the nearest `proseclean.toml`, searching upward from the
 working directory. Every key is optional. A typical file:
 
 ```toml
@@ -148,7 +148,7 @@ allow = ["comma-not"]                  # permit "X, not Y"
 
 ### Lexicon classes
 
-<!-- cleancopy-disable -->
+<!-- proseclean-disable -->
 | Class | Examples | Its literal verbs include |
 |---|---|---|
 | `agent` | person, team, AI agent | every verb |
@@ -163,7 +163,7 @@ allow = ["comma-not"]                  # permit "X, not Y"
 | `mixed` | resolver | never flagged |
 
 The built-in lists are in
-[`src/cleancopy/data/lexicon.toml`](src/cleancopy/data/lexicon.toml), and a
+[`src/proseclean/data/lexicon.toml`](src/proseclean/data/lexicon.toml), and a
 project entry overrides them.
 
 ### Every option
@@ -194,16 +194,16 @@ pattern = [
   { LEFT_ID = "of", REL_OP = ">", RIGHT_ID = "day", RIGHT_ATTRS = { LOWER = "day" } },
 ]
 
-[verbs]                         # extends src/cleancopy/data/verbs.toml
+[verbs]                         # extends src/proseclean/data/verbs.toml
 verb.offer = { suggest = ["provide"] }
 
-[[phrasal]]                     # extends src/cleancopy/data/phrasal.toml
+[[phrasal]]                     # extends src/proseclean/data/phrasal.toml
 verb = "roll"
 particle = "back"
 readings = ["undo", "reduce"]
 ```
 
-The model and parses are cached in `$XDG_CACHE_HOME/cleancopy`, or `~/.cache/cleancopy`
+The model and parses are cached in `$XDG_CACHE_HOME/proseclean`, or `~/.cache/proseclean`
 when `XDG_CACHE_HOME` is unset, and never in your project. The cache is keyed
 by the model and the text, so projects share it; delete the folder to clear
 it.
