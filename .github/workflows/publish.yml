@@ -43,5 +43,3 @@ jobs:
       - name: Stage the package, which goes live once a maintainer approves it with 2FA
         run: npm stage publish
         working-directory: npm
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }} # only for the first release, before npm trusts this workflow
