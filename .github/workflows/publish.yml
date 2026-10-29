@@ -21,7 +21,13 @@ jobs:
           test "$(jq -r .version npm/package.json)" = "$v"
       - run: uv run pytest -q
       - run: uv build
-      - run: uv publish --check-url https://pypi.org/simple/ # skips files already uploaded, so a rerun can finish
+      - name: Publish, unless PyPI already has this version, so that a rerun can reach npm
+        run: |
+          if curl -sf -o /dev/null "https://pypi.org/pypi/proseclean/${GITHUB_REF_NAME#v}/json"; then
+            echo "PyPI already has ${GITHUB_REF_NAME#v}"
+          else
+            uv publish --check-url https://pypi.org/simple/
+          fi
   npm:
     needs: pypi
     runs-on: ubuntu-24.04
