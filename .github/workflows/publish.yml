@@ -1,5 +1,6 @@
-# Publishes a v* tag to PyPI, then the npm launcher, with trusted publishing:
-# PyPI and npm accept this workflow's OIDC token, so no token is stored.
+# Publishes a v* tag to PyPI, then stages the npm launcher, with trusted
+# publishing: PyPI and npm accept this workflow's OIDC token, so no token is
+# stored. The npm package goes live once a maintainer approves it with 2FA.
 name: Publish
 on:
   push:

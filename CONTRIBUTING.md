@@ -70,15 +70,38 @@ git tag v0.5.0
 git push origin v0.5.0
 ```
 
-The tag runs `.github/workflows/publish.yml`, which tests and publishes the
-Python package to PyPI and then stages the npm package, which runs that PyPI
-release through uv. A staged npm package goes live once a maintainer approves
-it with 2FA, in the Staged Packages tab on npmjs.com or with:
+The tag runs [`.github/workflows/publish.yml`](.github/workflows/publish.yml):
+
+1. `pypi` checks that the tag matches both versions, runs the tests, builds
+   the wheel and source archive, and publishes the two files to PyPI. When
+   PyPI already has the version, the job skips the upload, so a rerun can
+   reach npm.
+2. `npm` stages `@innerlattice/proseclean` from [`npm/`](npm). The package
+   is a launcher that runs `uvx proseclean@VERSION` with its own version, so
+   the launcher always runs the PyPI release of the same version.
+
+PyPI and npm accept the workflow through trusted publishing, so no token is
+stored. PyPI trusts `ayahohner/proseclean`'s `publish.yml` in the GitHub
+environment `pypi`. npm trusts the same workflow to stage only:
+
+```sh
+npm trust github @innerlattice/proseclean --file publish.yml --repo ayahohner/proseclean --allow-stage-publish
+```
+
+A staged npm package goes live once a maintainer approves it with 2FA. The
+Staged Packages tab on npmjs.com has an Approve button, and the command line
+has:
 
 ```sh
 npm stage list @innerlattice/proseclean
 npm stage approve <stage-id>
 ```
+
+The spaCy model is not in the package. proseclean downloads the pinned
+version on first use and checks its hash (`MODEL_VERSION`, `MODEL_URL`, and
+`MODEL_SHA256` in [`src/proseclean/nlp.py`](src/proseclean/nlp.py)). A new
+model can parse differently and change the findings, so it changes only in a
+release: update all three.
 
 ## License
 
