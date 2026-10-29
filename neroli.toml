@@ -1,0 +1,10 @@
+# proseclean's code-quality policy for neroli: the default rules (CRAP at most
+# 8, function and file maintainability index above 75, no rise in erosion)
+# over the package, with coverage from coverage.py.
+
+[files]
+include = ["src/**/*.py"]
+
+[coverage]
+reports = [".coverage.json"]
+command = "uv run pytest -q --cov=proseclean --cov-report=json:.coverage.json"

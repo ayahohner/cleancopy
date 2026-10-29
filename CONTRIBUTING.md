@@ -19,16 +19,22 @@ uv run pytest
 ```
 
 Every change keeps two quality thresholds: no function has a CRAP score above
-8, and every file has a maintainability index above 75. Check both with a
-coverage report:
+8, and every function and file has a maintainability index above 75.
+[neroli](https://www.npmjs.com/package/@innerlattice/neroli) checks both with
+the policy in `neroli.toml`, after running the tests with coverage:
 
 ```sh
-uv run pytest --cov=proseclean --cov-report=json:.coverage.json
-uv run python scripts/metrics.py .coverage.json
+npx @innerlattice/neroli@0.1.0 gate src --run-coverage
 ```
 
-The metrics script prints each score, ends with PASS or FAIL, and exits with
-status 1 on a failure.
+proseclean checks its own docs, the Markdown that `proseclean.toml` includes:
+
+```sh
+uv run proseclean
+```
+
+[`.github/workflows/check.yml`](.github/workflows/check.yml) runs the tests,
+the gate, and the docs check on every push to `main` and every pull request.
 
 ## Add to the tables
 

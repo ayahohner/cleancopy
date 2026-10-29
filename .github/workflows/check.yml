@@ -1,0 +1,22 @@
+# Tests, neroli's code-quality gate, and proseclean on its own docs, for every
+# push to main and every pull request.
+name: Check
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0 # hatch-vcs reads the version from the tags
+      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+      - run: uv run pytest -q --cov=proseclean --cov-report=json:.coverage.json
+      - name: Gate the package with neroli, on the policy in neroli.toml
+        run: npx --yes @innerlattice/neroli@0.1.0 gate src
+      - name: Check the docs with this checkout's proseclean
+        run: uv run proseclean

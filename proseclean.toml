@@ -1,0 +1,2 @@
+# proseclean's own docs, which CI checks with this checkout's proseclean.
+include = ["*.md", "npm/*.md"]
