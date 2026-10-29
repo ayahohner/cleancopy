@@ -71,8 +71,14 @@ git push origin v0.5.0
 ```
 
 The tag runs `.github/workflows/publish.yml`, which tests and publishes the
-Python package to PyPI and then the npm package, which runs that PyPI release
-through uv.
+Python package to PyPI and then stages the npm package, which runs that PyPI
+release through uv. A staged npm package goes live once a maintainer approves
+it with 2FA, in the Staged Packages tab on npmjs.com or with:
+
+```sh
+npm stage list @innerlattice/proseclean
+npm stage approve <stage-id>
+```
 
 ## License
 

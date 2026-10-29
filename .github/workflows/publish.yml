@@ -21,7 +21,7 @@ jobs:
           test "$(jq -r .version npm/package.json)" = "$v"
       - run: uv run pytest -q
       - run: uv build
-      - run: uv publish
+      - run: uv publish --check-url https://pypi.org/simple/ # skips files already uploaded, so a rerun can finish
   npm:
     needs: pypi
     runs-on: ubuntu-24.04
@@ -33,7 +33,9 @@ jobs:
         with:
           node-version: 24
           registry-url: https://registry.npmjs.org
-      - run: npm publish
+      - run: npm install -g npm@12.2.0 # the first npm that stages new packages
+      - name: Stage the package, which goes live once a maintainer approves it with 2FA
+        run: npm stage publish
         working-directory: npm
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }} # only for the first release, before npm trusts this workflow
