@@ -1,6 +1,6 @@
 {
   "name": "@innerlattice/proseclean",
-  "version": "0.5.0",
+  "version": "0.0.0",
   "description": "Deterministic checks for English prose, aimed at the habits of LLM-written text.",
   "keywords": ["prose", "linter", "markdown", "writing", "llm"],
   "homepage": "https://github.com/ayahohner/proseclean",

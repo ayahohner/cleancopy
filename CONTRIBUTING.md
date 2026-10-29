@@ -62,21 +62,28 @@ uv run proseclean README.md CONTRIBUTING.md
 
 ## Release
 
-A version lives in `pyproject.toml` and `npm/package.json`; set both, commit,
-and push a tag:
+A release takes its version from its tag, and no file holds the version. To
+release the current commit on `main`, push a tag, or create a release with
+that tag on GitHub, whose release notes list the commits since the last tag:
 
 ```sh
-git tag v0.5.0
-git push origin v0.5.0
+git tag v0.6.0
+git push origin v0.6.0
 ```
+
+[hatch-vcs](https://github.com/ofek/hatch-vcs) reads the version from git, so
+a build between tags gets a development version such as `0.6.1.dev2+g1a2b3c4`.
+The version in `npm/package.json` stays `0.0.0`.
 
 The tag runs [`.github/workflows/publish.yml`](.github/workflows/publish.yml):
 
-1. `pypi` checks that the tag matches both versions, runs the tests, builds
-   the wheel and source archive, and publishes the two files to PyPI. When
+1. `pypi` runs the tests, builds the wheel and source archive, checks that
+   the wheel took its version from the tag, and publishes the two files to
+   PyPI. When
    PyPI already has the version, the job skips the upload, so a rerun can
    reach npm.
-2. `npm` stages `@innerlattice/proseclean` from [`npm/`](npm). The package
+2. `npm` sets the version in [`npm/package.json`](npm/package.json) from the
+   tag and stages `@innerlattice/proseclean`. The package
    is a launcher that runs `uvx proseclean@VERSION` with its own version, so
    the launcher always runs the PyPI release of the same version.
 

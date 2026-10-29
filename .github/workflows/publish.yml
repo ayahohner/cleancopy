@@ -14,14 +14,13 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0 # hatch-vcs reads the version from the tag
       - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
-      - name: Check that the tag matches both versions
-        run: |
-          v="${GITHUB_REF_NAME#v}"
-          grep -qx "version = \"$v\"" pyproject.toml
-          test "$(jq -r .version npm/package.json)" = "$v"
       - run: uv run pytest -q
       - run: uv build
+      - name: Check that the build took its version from the tag
+        run: test -f "dist/proseclean-${GITHUB_REF_NAME#v}-py3-none-any.whl"
       - name: Publish, unless PyPI already has this version, so that a rerun can reach npm
         run: |
           if curl -sf -o /dev/null "https://pypi.org/pypi/proseclean/${GITHUB_REF_NAME#v}/json"; then
@@ -41,6 +40,8 @@ jobs:
           node-version: 24
           registry-url: https://registry.npmjs.org
       - run: npm install -g npm@12.2.0 # the first npm that stages new packages
-      - name: Stage the package, which goes live once a maintainer approves it with 2FA
-        run: npm stage publish
+      - name: Stage the package with the tag's version, which goes live once a maintainer approves it with 2FA
+        run: |
+          npm version "${GITHUB_REF_NAME#v}" --no-git-tag-version
+          npm stage publish
         working-directory: npm

@@ -1,6 +1,6 @@
 [project]
 name = "proseclean"
-version = "0.5.0"
+dynamic = ["version"]  # from the git tag, through hatch-vcs
 description = "Deterministic checks for English prose, aimed at the habits of LLM-written text."
 requires-python = ">=3.12,<3.13"
 readme = "README.md"
@@ -39,8 +39,11 @@ Issues = "https://github.com/ayahohner/proseclean/issues"
 proseclean = "proseclean.cli:main"
 
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
+
+[tool.hatch.version]
+source = "vcs"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/proseclean"]
